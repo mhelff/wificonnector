@@ -26,7 +26,7 @@ public class LoginToken {
     
     private String token;
     
-    public void Token() {
+    public LoginToken() {
         reset();
     }
     

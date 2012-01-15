@@ -29,7 +29,8 @@ import android.telephony.SmsMessage;
 public class SMSReceiver extends BroadcastReceiver {
 
     public static final String ACTION = "android.provider.Telephony.SMS_RECEIVED";
-
+    private static final String TOKEN_MSG_START = "Ihr Telefonica WLAN Token lautet: ";
+    
     private LoginToken token;
     
     public SMSReceiver(LoginToken t) {
@@ -45,7 +46,11 @@ public class SMSReceiver extends BroadcastReceiver {
                 SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) messages[n]);
                 // TODO: check from address
                 // now parse message and try to set token
-                token.setToken(smsMessage.getMessageBody());
+                String msg = smsMessage.getMessageBody();
+                if(msg != null && msg.startsWith(TOKEN_MSG_START)) {
+                    token.setToken(msg.substring(TOKEN_MSG_START.length()));
+                }
+                
             }
         }
     }

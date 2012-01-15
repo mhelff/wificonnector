@@ -95,6 +95,8 @@ public class WifiConnectorActivity extends Activity {
 
     private class LoginTask extends AsyncTask<String, String, String> {
 
+        
+        
         private Context applicationContext;
         private WifiManager wifiManager;
         private HttpClient httpClient = new DefaultHttpClient();
@@ -114,7 +116,7 @@ public class WifiConnectorActivity extends Activity {
                 return null;
 
             // check if network is already unlocked
-            checkConnectivity(httpClient);
+            checkConnectivity(httpClient, true);
             if (isCancelled())
                 return null;
 
@@ -129,8 +131,13 @@ public class WifiConnectorActivity extends Activity {
                 return null;
             
             // post token to confirmation page
+            submitToken(httpClient, loginToken);
+            if (isCancelled())
+                return null;
+            
             // check connectivity to google or other page
-            return "success";
+            checkConnectivity(httpClient, false);
+            return loginToken.getToken();
         }
 
         protected void onProgressUpdate(String... progress) {
@@ -149,7 +156,7 @@ public class WifiConnectorActivity extends Activity {
 
         protected void checkWifi(WifiManager wifiManager) {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            if (wifiInfo == null || !"TelefonicaPublic".equals(wifiInfo.getSSID())) {
+            if (wifiInfo == null || !"o2ZJ".equals(wifiInfo.getSSID())) {
                 // post error
                 publishProgress("Failure, not connected to TelefonicaPublic");
                 cancel(false);      
@@ -158,7 +165,7 @@ public class WifiConnectorActivity extends Activity {
             }
         }
 
-        protected void checkConnectivity(HttpClient httpClient) {
+        protected void checkConnectivity(HttpClient httpClient, boolean beforeUnlock) {
             try {
                 HttpGet httpGet = new HttpGet("http://www.google.com");
                 HttpResponse response = httpClient.execute(httpGet, localContext);
@@ -170,8 +177,16 @@ public class WifiConnectorActivity extends Activity {
                     result += line + "\n";
                 }
                 if (result.contains("<title>Google</title>")) {
-                    publishProgress("Network is already unlocked, start surfing!");
+                    if(beforeUnlock) {
+                        publishProgress("Network is already unlocked, start surfing!");
                     cancel(false);
+                    } else {
+                        publishProgress("Network is now unlocked, start surfing!");
+                    }
+                } else {
+                    if(!beforeUnlock) {
+                        publishProgress("Network is not unlocked, something failed!");
+                    }
                 }
             } catch (ClientProtocolException e) {
                 publishProgress("Error checking network status, please retry");
@@ -206,19 +221,22 @@ public class WifiConnectorActivity extends Activity {
             SMSReceiver receiver = new SMSReceiver(loginToken);
             applicationContext.registerReceiver(receiver, new IntentFilter(SMSReceiver.ACTION));
             
+            int iterations = 1;
             // loop for 10 seconds and wait for SMS arriving
-            while(!this.isCancelled()) {
+            while(iterations < 20 && !this.isCancelled()) {
                 if(loginToken.isTokenSet()) {
                     break;
                 }
                 
                 // sleep a second
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     // just finish then
                     break;
                 }
+                
+                iterations++;
             }
             
             // remove broadcast receiver
@@ -230,7 +248,7 @@ public class WifiConnectorActivity extends Activity {
                 // post mobile-number to login page
                 HttpPost httpPost = new HttpPost("http://intranet.login.page");
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-                nameValuePairs.add(new BasicNameValuePair("mobileNumber", "+491791004418"));
+                nameValuePairs.add(new BasicNameValuePair("token", token.getToken()));
                 httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 // Execute HTTP Post Request
                 httpClient.execute(httpPost);
