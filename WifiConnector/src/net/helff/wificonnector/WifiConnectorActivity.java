@@ -45,6 +45,9 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 
 /**
@@ -59,6 +62,14 @@ public class WifiConnectorActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        Button b = (Button)this.findViewById(R.id.connectButton);
+        b.setOnClickListener(new OnClickListener() {
+
+            public void onClick(View v) {
+                new LoginTask().execute("+491791004418");
+            }
+            
+        });
     }
 
     public static WifiConnectorActivity instance() {
@@ -108,7 +119,7 @@ public class WifiConnectorActivity extends Activity {
                 return null;
 
             // post mobile-number to login page
-            loginStep1(httpClient);
+            submitMSISDN(httpClient, mobileNumber[0]);
             if (isCancelled())
                 return null;
 
@@ -171,12 +182,12 @@ public class WifiConnectorActivity extends Activity {
             }
         }
 
-        protected void loginStep1(HttpClient httpClient) {
+        protected void submitMSISDN(HttpClient httpClient, String msisdn) {
             try {
                 // post mobile-number to login page
                 HttpPost httpPost = new HttpPost("http://intranet.login.page");
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-                nameValuePairs.add(new BasicNameValuePair("mobileNumber", "+491791004418"));
+                nameValuePairs.add(new BasicNameValuePair("mobileNumber", msisdn));
                 httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 // Execute HTTP Post Request
                 httpClient.execute(httpPost);
