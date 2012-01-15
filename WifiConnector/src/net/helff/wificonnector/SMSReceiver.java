@@ -23,30 +23,30 @@ package net.helff.wificonnector;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
+import android.os.Bundle;
+import android.telephony.SmsMessage;
 
-public class WifiConnectivityReceiver extends BroadcastReceiver {
+public class SMSReceiver extends BroadcastReceiver {
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		Log.d(WifiConnectivityReceiver.class.getSimpleName(), "action: "
-                + intent.getAction());
+    public static final String ACTION = "android.provider.Telephony.SMS_RECEIVED";
 
-		WifiConnectorActivity a = WifiConnectorActivity.instance();
-		if(a != null) {
-			a.addViewText(intent.toString());
-		}
-
-		NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
-		if(networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-			if(a != null) {
-				a.addViewText(networkInfo.toString());
-			}
-		}
-		   
-		
-	}
-
+    private LoginToken token;
+    
+    public SMSReceiver(LoginToken t) {
+        token = t;
+    }
+    
+    public void onReceive(Context context, Intent intent) {
+        if (intent.getAction().equals(ACTION)) {
+            Bundle bundle = intent.getExtras();
+            
+            Object messages[] = (Object[]) bundle.get("pdus");
+            for (int n = 0; n < messages.length; n++) {
+                SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) messages[n]);
+                // TODO: check from address
+                // now parse message and try to set token
+                token.setToken(smsMessage.getMessageBody());
+            }
+        }
+    }
 }

@@ -3,5 +3,6 @@
 
     <string name="hello">Hello World, WifiConnectorActivity!</string>
     <string name="app_name">WifiConnector</string>
+    <string name="connect">Verbinden</string>
 
 </resources>
