@@ -40,12 +40,17 @@ import org.apache.http.protocol.HttpContext;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -57,28 +62,34 @@ import android.widget.TextView;
  */
 public class WifiConnectorActivity extends Activity {
     private static WifiConnectorActivity mInst;
+    private boolean autoConnect;
+    private String mobileNumber;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        Button b = (Button)this.findViewById(R.id.connectButton);
+        Button b = (Button) this.findViewById(R.id.connectButton);
         b.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
-                new LoginTask().execute("+491791004418");
+                new LoginTask().execute(mobileNumber);
             }
-            
+
         });
-        Button b1 = (Button)this.findViewById(R.id.disconnectButton);
+        Button b1 = (Button) this.findViewById(R.id.disconnectButton);
         b1.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
-                new LogoutTask().execute("+491791004418");
+                new LogoutTask().execute(mobileNumber);
             }
-            
+
         });
+        
+        if(autoConnect) {
+            // start some background service to watch WiFi connection
+        }
     }
 
     public static WifiConnectorActivity instance() {
@@ -93,6 +104,7 @@ public class WifiConnectorActivity extends Activity {
     @Override
     public void onStart() {
         super.onStart();
+        getPrefs();
         mInst = this;
     }
 
@@ -100,6 +112,41 @@ public class WifiConnectorActivity extends Activity {
     public void onStop() {
         mInst = null;
         super.onStop();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        
+        menu.add(0, Menu.FIRST, 1, R.string.settings)
+        .setShortcut('9', 's')
+        .setIcon(android.R.drawable.ic_menu_preferences);
+        
+        menu.add(0, Menu.FIRST+1, 1, R.string.info)
+        .setShortcut('0', 'i')
+        .setIcon(android.R.drawable.ic_menu_info_details);
+        
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        
+        case Menu.FIRST:
+            Intent intent = new Intent();
+            intent.setClass(this, WifiConnectorPreferences.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private void getPrefs() {
+        // Get the xml/preferences.xml preferences
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        autoConnect = prefs.getBoolean("autoConnect", false);
+        mobileNumber = prefs.getString("mobileNumber", "");
     }
 
     private class LoginTask extends AsyncTask<String, String, String> {
@@ -117,6 +164,7 @@ public class WifiConnectorActivity extends Activity {
         }
 
         protected String doInBackground(String... mobileNumber) {
+            publishProgress(mobileNumber[0]);
             // check if WiFi is ours
             checkWifi(wifiManager);
             if (isCancelled())
@@ -136,18 +184,18 @@ public class WifiConnectorActivity extends Activity {
             waitForSMS();
             if (isCancelled())
                 return null;
-            
+
             // post token to confirmation page
             submitToken(httpClient, loginToken);
             if (isCancelled())
                 return null;
-            
-            //try {
-			//	Thread.sleep(1000);
-			//} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-			//	e.printStackTrace();
-			//}
+
+            // try {
+            // Thread.sleep(1000);
+            // } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            // e.printStackTrace();
+            // }
             // check connectivity to google or other page
             checkConnectivity(httpClient, false);
             return loginToken.getToken();
@@ -161,7 +209,7 @@ public class WifiConnectorActivity extends Activity {
             if (result != null)
                 addViewText(result);
         }
-        
+
         @Override
         protected void onCancelled() {
             // remove BroadcastReceiver if left over
@@ -172,7 +220,7 @@ public class WifiConnectorActivity extends Activity {
             if (wifiInfo == null || !"TelefonicaPublic".equals(wifiInfo.getSSID())) {
                 // post error
                 publishProgress("Failure, not connected to TelefonicaPublic");
-                cancel(false);      
+                cancel(false);
             } else {
                 publishProgress("Connected to TelefonicaPublic");
             }
@@ -190,14 +238,14 @@ public class WifiConnectorActivity extends Activity {
                     result += line + "\n";
                 }
                 if (result.contains("<title>helff.net</title>")) {
-                    if(beforeUnlock) {
+                    if (beforeUnlock) {
                         publishProgress("Network is already unlocked, start surfing!");
-                    cancel(false);
+                        cancel(false);
                     } else {
                         publishProgress("Network is now unlocked, start surfing!");
                     }
                 } else {
-                    if(!beforeUnlock) {
+                    if (!beforeUnlock) {
                         publishProgress("Network is not unlocked, something failed!");
                     }
                 }
@@ -234,20 +282,20 @@ public class WifiConnectorActivity extends Activity {
                 cancel(false);
             }
         }
-        
+
         protected void waitForSMS() {
-            
+
             // set up broadcast receiver
             SMSReceiver receiver = new SMSReceiver(loginToken);
             applicationContext.registerReceiver(receiver, new IntentFilter(SMSReceiver.ACTION));
-            
+
             int iterations = 1;
             // loop for 10 seconds and wait for SMS arriving
-            while(iterations < 20 && !this.isCancelled()) {
-                if(loginToken.isTokenSet()) {
+            while (iterations < 20 && !this.isCancelled()) {
+                if (loginToken.isTokenSet()) {
                     break;
                 }
-                
+
                 // sleep a second
                 try {
                     Thread.sleep(500);
@@ -255,14 +303,14 @@ public class WifiConnectorActivity extends Activity {
                     // just finish then
                     break;
                 }
-                
+
                 iterations++;
             }
-            
+
             // remove broadcast receiver
             applicationContext.unregisterReceiver(receiver);
         }
-        
+
         protected void submitToken(HttpClient httpClient, LoginToken token) {
             try {
                 // post mobile-number to login page
@@ -285,7 +333,7 @@ public class WifiConnectorActivity extends Activity {
             }
         }
     }
-    
+
     private class LogoutTask extends AsyncTask<String, String, String> {
 
         private Context applicationContext;
@@ -318,7 +366,7 @@ public class WifiConnectorActivity extends Activity {
             if (result != null)
                 addViewText(result);
         }
-        
+
         @Override
         protected void onCancelled() {
             // remove BroadcastReceiver if left over
@@ -329,7 +377,7 @@ public class WifiConnectorActivity extends Activity {
             if (wifiInfo == null || !"TelefonicaPublic".equals(wifiInfo.getSSID())) {
                 // post error
                 publishProgress("Failure, not connected to TelefonicaPublic");
-                cancel(false);      
+                cancel(false);
             } else {
                 publishProgress("Connected to TelefonicaPublic");
             }
@@ -352,6 +400,6 @@ public class WifiConnectorActivity extends Activity {
                 publishProgress("Could not submit sign-in form, please retry");
                 cancel(false);
             }
-        }        
-   }
+        }
+    }
 }

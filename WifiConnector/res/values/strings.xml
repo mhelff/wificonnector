@@ -5,5 +5,8 @@
     <string name="app_name">WifiConnector</string>
     <string name="connect">Verbinden</string>
     <string name="disconnect">Abmelden</string>
+    <string name="settings">Einstellungen</string>
+    <string name="telefonicaPublic">TelefonicaPublic</string>
+    <string name="info">Info</string>
 
 </resources>

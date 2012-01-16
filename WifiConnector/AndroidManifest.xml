@@ -30,6 +30,7 @@
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>
             </intent-filter>
         </receiver>
+        <activity android:name="WifiConnectorPreferences"></activity>
     </application>
 
 </manifest>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Mobile Number" >
+        <EditTextPreference
+            android:name="MSISDN"
+            android:defaultValue=""
+            android:key="mobileNumber"
+            android:summary="Your mobile number in the format +491791234567"
+            android:title="Mobile Number" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Second Category" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="autoConnect"
+            android:summary="Connect to TelefonicaPublic automatically"
+            android:title="Automatic connection" />
+    </PreferenceCategory>
+</PreferenceScreen>
