@@ -45,6 +45,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -141,6 +142,12 @@ public class WifiConnectorActivity extends Activity {
             if (isCancelled())
                 return null;
             
+            //try {
+			//	Thread.sleep(1000);
+			//} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+			//	e.printStackTrace();
+			//}
             // check connectivity to google or other page
             checkConnectivity(httpClient, false);
             return loginToken.getToken();
@@ -167,13 +174,13 @@ public class WifiConnectorActivity extends Activity {
                 publishProgress("Failure, not connected to TelefonicaPublic");
                 cancel(false);      
             } else {
-                publishProgress("Connected to TelefonicaWifi");
+                publishProgress("Connected to TelefonicaPublic");
             }
         }
 
         protected void checkConnectivity(HttpClient httpClient, boolean beforeUnlock) {
             try {
-                HttpGet httpGet = new HttpGet("http://www.google.com");
+                HttpGet httpGet = new HttpGet("http://www.helff.net");
                 HttpResponse response = httpClient.execute(httpGet, localContext);
                 String result = "";
 
@@ -182,7 +189,7 @@ public class WifiConnectorActivity extends Activity {
                 while ((line = reader.readLine()) != null) {
                     result += line + "\n";
                 }
-                if (result.contains("<title>Google</title>")) {
+                if (result.contains("<title>helff.net</title>")) {
                     if(beforeUnlock) {
                         publishProgress("Network is already unlocked, start surfing!");
                     cancel(false);
@@ -194,11 +201,15 @@ public class WifiConnectorActivity extends Activity {
                         publishProgress("Network is not unlocked, something failed!");
                     }
                 }
+                reader.close();
+                response.getEntity().consumeContent();
             } catch (ClientProtocolException e) {
                 publishProgress("Error checking network status, please retry");
+                Log.e(WifiConnectorActivity.class.getName(), "Network check failed1", e);
                 cancel(false);
             } catch (IOException e) {
                 publishProgress("Error checking network status, please retry");
+                Log.e(WifiConnectorActivity.class.getName(), "Network check failed2", e);
                 cancel(false);
             }
         }
@@ -206,12 +217,15 @@ public class WifiConnectorActivity extends Activity {
         protected void submitMSISDN(HttpClient httpClient, String msisdn) {
             try {
                 // post mobile-number to login page
-                HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/login.php");
+                HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/login.php?l=de");
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-                nameValuePairs.add(new BasicNameValuePair("mobileNumber", msisdn));
+                nameValuePairs.add(new BasicNameValuePair("handynr", msisdn));
+                nameValuePairs.add(new BasicNameValuePair("login", "Token per SMS zusenden &gt;"));
                 httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 // Execute HTTP Post Request
-                httpClient.execute(httpPost, localContext);
+                HttpResponse response = httpClient.execute(httpPost, localContext);
+                response.getEntity().consumeContent();
+                publishProgress("Submitted MSISDN: " + msisdn);
             } catch (ClientProtocolException e) {
                 publishProgress("Could not submit sign-in form, please retry");
                 cancel(false);
@@ -252,12 +266,16 @@ public class WifiConnectorActivity extends Activity {
         protected void submitToken(HttpClient httpClient, LoginToken token) {
             try {
                 // post mobile-number to login page
-                HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/token.php");
+                HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/token.php?l=de");
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
                 nameValuePairs.add(new BasicNameValuePair("token", token.getToken()));
+                nameValuePairs.add(new BasicNameValuePair("submit", "Lossurfen &gt;"));
                 httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 // Execute HTTP Post Request
                 httpClient.execute(httpPost, localContext);
+                HttpResponse response = httpClient.execute(httpPost, localContext);
+                response.getEntity().consumeContent();
+                publishProgress("Submitted token: " + token.getToken());
             } catch (ClientProtocolException e) {
                 publishProgress("Could not submit sign-in form, please retry");
                 cancel(false);
@@ -313,19 +331,20 @@ public class WifiConnectorActivity extends Activity {
                 publishProgress("Failure, not connected to TelefonicaPublic");
                 cancel(false);      
             } else {
-                publishProgress("Connected to TelefonicaWifi");
+                publishProgress("Connected to TelefonicaPublic");
             }
         }
 
         protected void logout(HttpClient httpClient, String msisdn) {
             try {
                 // post mobile-number to login page
-                HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/login.php");
+                HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/index.php?l=de");
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-                nameValuePairs.add(new BasicNameValuePair("mobileNumber", msisdn));
+                nameValuePairs.add(new BasicNameValuePair("exit", "Ja, diese Sitzung jetzt beenden &gt;"));
                 httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 // Execute HTTP Post Request
-                httpClient.execute(httpPost, localContext);
+                HttpResponse response = httpClient.execute(httpPost, localContext);
+                response.getEntity().consumeContent();
             } catch (ClientProtocolException e) {
                 publishProgress("Could not submit sign-in form, please retry");
                 cancel(false);
