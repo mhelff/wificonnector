@@ -161,10 +161,14 @@ public class WifiConnectorActivity extends Activity {
         protected void onPreExecute() {
             applicationContext = getApplicationContext();
             wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            Button b = (Button) findViewById(R.id.connectButton);
+            b.setEnabled(false);
         }
 
         protected String doInBackground(String... mobileNumber) {
-            publishProgress(mobileNumber[0]);
+            // TODO: check if mobile number is set
+            // publishProgress(mobileNumber[0]);
+            
             // check if WiFi is ours
             checkWifi(wifiManager);
             if (isCancelled())
@@ -190,13 +194,7 @@ public class WifiConnectorActivity extends Activity {
             if (isCancelled())
                 return null;
 
-            // try {
-            // Thread.sleep(1000);
-            // } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // }
-            // check connectivity to google or other page
+            // check connectivity to web page
             checkConnectivity(httpClient, false);
             return loginToken.getToken();
         }
@@ -206,6 +204,8 @@ public class WifiConnectorActivity extends Activity {
         }
 
         protected void onPostExecute(String result) {
+            Button b = (Button) findViewById(R.id.connectButton);
+            b.setEnabled(true);
             if (result != null)
                 addViewText(result);
         }
@@ -220,7 +220,7 @@ public class WifiConnectorActivity extends Activity {
             if (wifiInfo == null || !"TelefonicaPublic".equals(wifiInfo.getSSID())) {
                 // post error
                 publishProgress("Failure, not connected to TelefonicaPublic");
-                cancel(false);
+                cancel(true);
             } else {
                 publishProgress("Connected to TelefonicaPublic");
             }
@@ -240,7 +240,7 @@ public class WifiConnectorActivity extends Activity {
                 if (result.contains("<title>helff.net</title>")) {
                     if (beforeUnlock) {
                         publishProgress("Network is already unlocked, start surfing!");
-                        cancel(false);
+                        cancel(true);
                     } else {
                         publishProgress("Network is now unlocked, start surfing!");
                     }
@@ -254,11 +254,11 @@ public class WifiConnectorActivity extends Activity {
             } catch (ClientProtocolException e) {
                 publishProgress("Error checking network status, please retry");
                 Log.e(WifiConnectorActivity.class.getName(), "Network check failed1", e);
-                cancel(false);
+                cancel(true);
             } catch (IOException e) {
                 publishProgress("Error checking network status, please retry");
                 Log.e(WifiConnectorActivity.class.getName(), "Network check failed2", e);
-                cancel(false);
+                cancel(true);
             }
         }
 
@@ -276,10 +276,10 @@ public class WifiConnectorActivity extends Activity {
                 publishProgress("Submitted MSISDN: " + msisdn);
             } catch (ClientProtocolException e) {
                 publishProgress("Could not submit sign-in form, please retry");
-                cancel(false);
+                cancel(true);
             } catch (IOException e) {
                 publishProgress("Could not submit sign-in form, please retry");
-                cancel(false);
+                cancel(true);
             }
         }
 
@@ -287,7 +287,9 @@ public class WifiConnectorActivity extends Activity {
 
             // set up broadcast receiver
             SMSReceiver receiver = new SMSReceiver(loginToken);
-            applicationContext.registerReceiver(receiver, new IntentFilter(SMSReceiver.ACTION));
+            IntentFilter intentFilter = new IntentFilter(SMSReceiver.ACTION);
+            intentFilter.setPriority(100);
+            applicationContext.registerReceiver(receiver, intentFilter);
 
             int iterations = 1;
             // loop for 10 seconds and wait for SMS arriving
@@ -309,6 +311,13 @@ public class WifiConnectorActivity extends Activity {
 
             // remove broadcast receiver
             applicationContext.unregisterReceiver(receiver);
+            
+            if(loginToken.isTokenSet()) {
+                publishProgress("Received token: " + loginToken.getToken());
+            } else {
+                publishProgress("Token did not arrive within 10 seconds, please retry!");
+                cancel(true);
+            }
         }
 
         protected void submitToken(HttpClient httpClient, LoginToken token) {
@@ -326,10 +335,10 @@ public class WifiConnectorActivity extends Activity {
                 publishProgress("Submitted token: " + token.getToken());
             } catch (ClientProtocolException e) {
                 publishProgress("Could not submit sign-in form, please retry");
-                cancel(false);
+                cancel(true);
             } catch (IOException e) {
                 publishProgress("Could not submit sign-in form, please retry");
-                cancel(false);
+                cancel(true);
             }
         }
     }
@@ -345,6 +354,8 @@ public class WifiConnectorActivity extends Activity {
         protected void onPreExecute() {
             applicationContext = getApplicationContext();
             wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            Button b = (Button) findViewById(R.id.disconnectButton);
+            b.setEnabled(false);
         }
 
         protected String doInBackground(String... mobileNumber) {
@@ -363,6 +374,8 @@ public class WifiConnectorActivity extends Activity {
         }
 
         protected void onPostExecute(String result) {
+            Button b = (Button) findViewById(R.id.disconnectButton);
+            b.setEnabled(true);
             if (result != null)
                 addViewText(result);
         }
@@ -377,7 +390,7 @@ public class WifiConnectorActivity extends Activity {
             if (wifiInfo == null || !"TelefonicaPublic".equals(wifiInfo.getSSID())) {
                 // post error
                 publishProgress("Failure, not connected to TelefonicaPublic");
-                cancel(false);
+                cancel(true);
             } else {
                 publishProgress("Connected to TelefonicaPublic");
             }
@@ -395,10 +408,10 @@ public class WifiConnectorActivity extends Activity {
                 response.getEntity().consumeContent();
             } catch (ClientProtocolException e) {
                 publishProgress("Could not submit sign-in form, please retry");
-                cancel(false);
+                cancel(true);
             } catch (IOException e) {
                 publishProgress("Could not submit sign-in form, please retry");
-                cancel(false);
+                cancel(true);
             }
         }
     }

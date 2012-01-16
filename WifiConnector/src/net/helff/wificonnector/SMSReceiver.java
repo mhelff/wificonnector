@@ -49,6 +49,7 @@ public class SMSReceiver extends BroadcastReceiver {
                 String msg = smsMessage.getMessageBody();
                 if(msg != null && msg.startsWith(TOKEN_MSG_START)) {
                     token.setToken(msg.substring(TOKEN_MSG_START.length()));
+                    this.abortBroadcast();
                 }
                 
             }
