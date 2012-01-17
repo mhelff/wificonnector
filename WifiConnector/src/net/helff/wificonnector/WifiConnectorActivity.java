@@ -166,8 +166,10 @@ public class WifiConnectorActivity extends Activity {
         }
 
         protected String doInBackground(String... mobileNumber) {
-            // TODO: check if mobile number is set
-            // publishProgress(mobileNumber[0]);
+            // check if mobile number is set
+            checkMsisdn(mobileNumber[0]);
+            if (isCancelled())
+                return null;
             
             // check if WiFi is ours
             checkWifi(wifiManager);
@@ -213,6 +215,14 @@ public class WifiConnectorActivity extends Activity {
         @Override
         protected void onCancelled() {
             // remove BroadcastReceiver if left over
+        }
+        
+        protected void checkMsisdn(String msisdn) {
+            if (msisdn == null || msisdn.trim().length() == 0) {
+                // post error
+                publishProgress("Please enter your mobile phone number first");
+                cancel(true);
+            }
         }
 
         protected void checkWifi(WifiManager wifiManager) {
