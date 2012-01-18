@@ -25,28 +25,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.util.Log;
 
 public class WifiConnectivityReceiver extends BroadcastReceiver {
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		Log.d(WifiConnectivityReceiver.class.getSimpleName(), "action: "
-                + intent.getAction());
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.i("WifiConnectivityReceiver", "action: " + intent.getAction());
 
-		WifiConnectorActivity a = WifiConnectorActivity.instance();
-		if(a != null) {
-			a.addViewText(intent.toString());
-		}
+        WifiConnectorActivity a = WifiConnectorActivity.instance();
+        if (intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
+            if (a != null) {
+                a.updatePositionView();
+            }
+        }
 
-		NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
-		if(networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-			if(a != null) {
-				a.addViewText(networkInfo.toString());
-			}
-		}
-		   
-		
-	}
+        if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+
+            NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
+            if (networkInfo != null && networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                if (a != null) {
+                    a.triggerConnection();
+                }
+            }
+
+        }
+
+    }
 
 }

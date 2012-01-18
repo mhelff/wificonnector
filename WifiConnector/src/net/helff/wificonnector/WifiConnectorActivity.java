@@ -26,6 +26,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.helff.wificonnector.LocationData.Location;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -43,6 +45,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -54,6 +57,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 /**
@@ -64,6 +68,8 @@ public class WifiConnectorActivity extends Activity {
     private static WifiConnectorActivity mInst;
     private boolean autoConnect;
     private String mobileNumber;
+    
+    protected final String L = "WifiConnectorActivity";
 
     /** Called when the activity is first created. */
     @Override
@@ -74,7 +80,7 @@ public class WifiConnectorActivity extends Activity {
         b.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
-                new LoginTask().execute(mobileNumber);
+                new LoginTask(mobileNumber).execute(Boolean.FALSE);
             }
 
         });
@@ -82,13 +88,26 @@ public class WifiConnectorActivity extends Activity {
         b1.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
-                new LogoutTask().execute(mobileNumber);
+                new LogoutTask(mobileNumber).execute(Boolean.FALSE);
             }
 
         });
         
+        final ImageButton bPos = (ImageButton) this.findViewById(R.id.buttonPositionRefresh);
+        b1.setOnClickListener(new OnClickListener() {
+
+            public void onClick(View v) {
+                // just trigger WiFi-Scanning
+                bPos.setEnabled(!((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE)).startScan());
+            }
+
+        });
+        
+        
+        
+        
         if(autoConnect) {
-            // start some background service to watch WiFi connection
+            // TODO: start some background service to watch WiFi connection
         }
     }
 
@@ -96,21 +115,33 @@ public class WifiConnectorActivity extends Activity {
         return mInst;
     }
 
-    public void addViewText(String text) {
-        TextView tvValue = (TextView) this.findViewById(R.id.editText1);
-        tvValue.append(text + "\n");
+    public void setStatus(String status, String detail) {
+        Log.i(L, status + "; " + detail);
+        TextView largeStatus = (TextView) this.findViewById(R.id.largeStatus);
+        largeStatus.setText(status);
+        TextView detailStatus = (TextView) this.findViewById(R.id.smallStatus);
+        detailStatus.setText(detail);
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        // TODO: start location scanner
         getPrefs();
+        
+        // check wifi
+        new LoginTask(mobileNumber).execute(Boolean.TRUE);
+        
+        // start a wifi scan for position update
+        ((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE)).startScan();
+        
         mInst = this;
     }
 
     @Override
     public void onStop() {
         mInst = null;
+        // TODO: stop location scanner
         super.onStop();
     }
 
@@ -148,15 +179,56 @@ public class WifiConnectorActivity extends Activity {
         autoConnect = prefs.getBoolean("autoConnect", false);
         mobileNumber = prefs.getString("mobileNumber", "");
     }
+    
+    public void triggerConnection() {
+        getPrefs();
+        
+        if(autoConnect) {
+            new LoginTask(mobileNumber).execute(Boolean.FALSE);
+        }
+    }
+    
+    public void updatePositionView() {
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        
+        TextView position = (TextView) this.findViewById(R.id.position);
+        String posText = "Unknown position";
+        
+        List<ScanResult> results = wifiManager.getScanResults();
+        ScanResult strongest = null;
+        for(ScanResult scanResult : results) {
+            if("TelefonicaPublic".equals(scanResult.SSID) || "o2ZJ".equals(scanResult.SSID)) {
+                if(strongest == null || strongest.level < scanResult.level) {
+                    strongest = scanResult;
+                }
+            }
+        }
+        
+        if(strongest != null) {
+            Location location = LocationData.getLocation(strongest.BSSID);
+            if(location != null) {
+                posText = location.getBlock() + location.getFloor() + " " + location.getPosition();  
+            }
+        }
+        
+        position.setText(posText);
+        final ImageButton bPos = (ImageButton) this.findViewById(R.id.buttonPositionRefresh);
+        bPos.setEnabled(true);
+    }
 
-    private class LoginTask extends AsyncTask<String, String, String> {
+    private class LoginTask extends AsyncTask<Boolean, String, String> {
 
-        private Context applicationContext;
-        private WifiManager wifiManager;
-        private HttpClient httpClient = new DefaultHttpClient();
-        private HttpContext localContext = new BasicHttpContext();
+        protected Context applicationContext;
+        protected WifiManager wifiManager;
+        protected HttpClient httpClient = new DefaultHttpClient();
+        protected HttpContext localContext = new BasicHttpContext();
         private LoginToken loginToken = new LoginToken();
+        protected String mobileNumber;
 
+        public LoginTask(String mNumber) {
+            this.mobileNumber = mNumber;
+        }
+        
         @Override
         protected void onPreExecute() {
             applicationContext = getApplicationContext();
@@ -165,9 +237,9 @@ public class WifiConnectorActivity extends Activity {
             b.setEnabled(false);
         }
 
-        protected String doInBackground(String... mobileNumber) {
+        protected String doInBackground(Boolean... onlyCheck) {
             // check if mobile number is set
-            checkMsisdn(mobileNumber[0]);
+            checkMsisdn(mobileNumber);
             if (isCancelled())
                 return null;
             
@@ -182,7 +254,7 @@ public class WifiConnectorActivity extends Activity {
                 return null;
 
             // post mobile-number to login page
-            submitMSISDN(httpClient, mobileNumber[0]);
+            submitMSISDN(httpClient, mobileNumber);
             if (isCancelled())
                 return null;
 
@@ -202,26 +274,25 @@ public class WifiConnectorActivity extends Activity {
         }
 
         protected void onProgressUpdate(String... progress) {
-            addViewText(progress[0]);
+            setStatus(progress[0], progress[1]);
         }
 
         protected void onPostExecute(String result) {
             Button b = (Button) findViewById(R.id.connectButton);
             b.setEnabled(true);
-            if (result != null)
-                addViewText(result);
         }
 
         @Override
         protected void onCancelled() {
-            // remove BroadcastReceiver if left over
+            Button b = (Button) findViewById(R.id.connectButton);
+            b.setEnabled(true);
         }
         
         protected void checkMsisdn(String msisdn) {
             if (msisdn == null || msisdn.trim().length() == 0) {
                 // post error
-                publishProgress("Please enter your mobile phone number first");
-                cancel(true);
+                publishProgress("Check app settings", "Please enter your mobile phone number first");
+                cancel(false);
             }
         }
 
@@ -229,15 +300,21 @@ public class WifiConnectorActivity extends Activity {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             if (wifiInfo == null || !"TelefonicaPublic".equals(wifiInfo.getSSID())) {
                 // post error
-                publishProgress("Failure, not connected to TelefonicaPublic");
-                cancel(true);
+                publishProgress("Not connected", "Not connected to TelefonicaPublic WiFi");
+                cancel(false);
             } else {
-                publishProgress("Connected to TelefonicaPublic");
+                publishProgress("TelefonicaPublic locked", "Press connect to unlock internet access");
             }
         }
 
         protected void checkConnectivity(HttpClient httpClient, boolean beforeUnlock) {
+            final String mainStatus = beforeUnlock ? "Checking connectivity" : "Unlocking WiFi";
             try {
+                if(beforeUnlock) {
+                    publishProgress(mainStatus, "Check if internet access is already enabled");
+                } else {
+                    publishProgress(mainStatus, "Checking internet connectivity");
+                }
                 HttpGet httpGet = new HttpGet("http://www.helff.net");
                 HttpResponse response = httpClient.execute(httpGet, localContext);
                 String result = "";
@@ -249,32 +326,33 @@ public class WifiConnectorActivity extends Activity {
                 }
                 if (result.contains("<title>helff.net</title>")) {
                     if (beforeUnlock) {
-                        publishProgress("Network is already unlocked, start surfing!");
-                        cancel(true);
+                        publishProgress("WiFi ready", "Internet access is unlocked, start surfing!");
+                        cancel(false);
                     } else {
-                        publishProgress("Network is now unlocked, start surfing!");
+                        publishProgress("WiFi ready", "Internet access is unlocked, start surfing!");
                     }
                 } else {
                     if (!beforeUnlock) {
-                        publishProgress("Network is not unlocked, something failed!");
+                        publishProgress(mainStatus, "Network is not unlocked, something failed!");
                     }
                 }
                 reader.close();
                 response.getEntity().consumeContent();
             } catch (ClientProtocolException e) {
-                publishProgress("Error checking network status, please retry");
+                publishProgress(mainStatus, "Error checking network status, please retry");
                 Log.e(WifiConnectorActivity.class.getName(), "Network check failed1", e);
-                cancel(true);
+                cancel(false);
             } catch (IOException e) {
-                publishProgress("Error checking network status, please retry");
+                publishProgress(mainStatus, "Error checking network status, please retry");
                 Log.e(WifiConnectorActivity.class.getName(), "Network check failed2", e);
-                cancel(true);
+                cancel(false);
             }
         }
 
         protected void submitMSISDN(HttpClient httpClient, String msisdn) {
             try {
                 // post mobile-number to login page
+                publishProgress("Unlocking WiFi", "Submitting mobile phone number " + mobileNumber);
                 HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/login.php?l=de");
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
                 nameValuePairs.add(new BasicNameValuePair("handynr", msisdn));
@@ -285,17 +363,18 @@ public class WifiConnectorActivity extends Activity {
                 response.getEntity().consumeContent();
                 publishProgress("Submitted MSISDN: " + msisdn);
             } catch (ClientProtocolException e) {
-                publishProgress("Could not submit sign-in form, please retry");
-                cancel(true);
+                publishProgress("Unlocking WiFi", "Could not submit mobile phone number, please retry");
+                cancel(false);
             } catch (IOException e) {
-                publishProgress("Could not submit sign-in form, please retry");
-                cancel(true);
+                publishProgress("Unlocking WiFi", "Could not submit mobile phone number, please retry");
+                cancel(false);
             }
         }
 
         protected void waitForSMS() {
 
             // set up broadcast receiver
+            publishProgress("Unlocking WiFi", "Waiting for login token");
             SMSReceiver receiver = new SMSReceiver(loginToken);
             IntentFilter intentFilter = new IntentFilter(SMSReceiver.ACTION);
             intentFilter.setPriority(100);
@@ -323,16 +402,17 @@ public class WifiConnectorActivity extends Activity {
             applicationContext.unregisterReceiver(receiver);
             
             if(loginToken.isTokenSet()) {
-                publishProgress("Received token: " + loginToken.getToken());
+                publishProgress("Unlocking WiFi", "Received token: " + loginToken.getToken());
             } else {
-                publishProgress("Token did not arrive within 10 seconds, please retry!");
-                cancel(true);
+                publishProgress("Unlocking WiFi", "Token did not arrive within 10 seconds, please retry!");
+                cancel(false);
             }
         }
 
         protected void submitToken(HttpClient httpClient, LoginToken token) {
             try {
                 // post mobile-number to login page
+                publishProgress("Unlocking WiFi", "Submitting token: " + loginToken.getToken());
                 HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/token.php?l=de");
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
                 nameValuePairs.add(new BasicNameValuePair("token", token.getToken()));
@@ -342,24 +422,23 @@ public class WifiConnectorActivity extends Activity {
                 httpClient.execute(httpPost, localContext);
                 HttpResponse response = httpClient.execute(httpPost, localContext);
                 response.getEntity().consumeContent();
-                publishProgress("Submitted token: " + token.getToken());
+                publishProgress("Unlocking WiFi", "Submitted token: " + token.getToken());
             } catch (ClientProtocolException e) {
-                publishProgress("Could not submit sign-in form, please retry");
-                cancel(true);
+                publishProgress("Unlocking WiFi", "Could not submit token, please retry");
+                cancel(false);
             } catch (IOException e) {
-                publishProgress("Could not submit sign-in form, please retry");
-                cancel(true);
+                publishProgress("Unlocking WiFi", "Could not submit token, please retry");
+                cancel(false);
             }
         }
     }
 
-    private class LogoutTask extends AsyncTask<String, String, String> {
+    private class LogoutTask extends LoginTask {
 
-        private Context applicationContext;
-        private WifiManager wifiManager;
-        private HttpClient httpClient = new DefaultHttpClient();
-        private HttpContext localContext = new BasicHttpContext();
-
+        public LogoutTask(String mNumber) {
+            super(mNumber);
+        }
+        
         @Override
         protected void onPreExecute() {
             applicationContext = getApplicationContext();
@@ -368,7 +447,7 @@ public class WifiConnectorActivity extends Activity {
             b.setEnabled(false);
         }
 
-        protected String doInBackground(String... mobileNumber) {
+        protected String doInBackground(Boolean... onlyCheck) {
             // check if WiFi is ours
             checkWifi(wifiManager);
             if (isCancelled())
@@ -379,15 +458,9 @@ public class WifiConnectorActivity extends Activity {
             return "Disconnected";
         }
 
-        protected void onProgressUpdate(String... progress) {
-            addViewText(progress[0]);
-        }
-
         protected void onPostExecute(String result) {
             Button b = (Button) findViewById(R.id.disconnectButton);
             b.setEnabled(true);
-            if (result != null)
-                addViewText(result);
         }
 
         @Override
@@ -395,19 +468,9 @@ public class WifiConnectorActivity extends Activity {
             // remove BroadcastReceiver if left over
         }
 
-        protected void checkWifi(WifiManager wifiManager) {
-            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            if (wifiInfo == null || !"TelefonicaPublic".equals(wifiInfo.getSSID())) {
-                // post error
-                publishProgress("Failure, not connected to TelefonicaPublic");
-                cancel(true);
-            } else {
-                publishProgress("Connected to TelefonicaPublic");
-            }
-        }
-
         protected void logout(HttpClient httpClient, String msisdn) {
             try {
+                publishProgress("Logging off", "Logging off Telefonica WiFi internet access");
                 // post mobile-number to login page
                 HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/index.php?l=de");
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
@@ -416,12 +479,13 @@ public class WifiConnectorActivity extends Activity {
                 // Execute HTTP Post Request
                 HttpResponse response = httpClient.execute(httpPost, localContext);
                 response.getEntity().consumeContent();
+                publishProgress("TelefonicaPublic locked", "Press connect to unlock internet access");
             } catch (ClientProtocolException e) {
-                publishProgress("Could not submit sign-in form, please retry");
-                cancel(true);
+                publishProgress("Logging off", "Could not log off, please retry");
+                cancel(false);
             } catch (IOException e) {
-                publishProgress("Could not submit sign-in form, please retry");
-                cancel(true);
+                publishProgress("Logging off", "Could not log off, please retry");
+                cancel(false);
             }
         }
     }

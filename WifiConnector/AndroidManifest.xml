@@ -7,6 +7,7 @@
     <uses-sdk android:minSdkVersion="7" />
     
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     
@@ -24,10 +25,10 @@
             </intent-filter>
         </activity>
         <receiver android:name="net.helff.wificonnector.WifiConnectivityReceiver" 
-            android:permission="android.permission.ACCESS_WIFI_STATE" 
             android:process="@string/app_name">
             <intent-filter>
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>
+                <action android:name="android.net.wifi.STATE_CHANGE"/>
+                <action android:name="android.net.wifi.SCAN_RESULTS"/>
             </intent-filter>
         </receiver>
         <activity android:name="WifiConnectorPreferences"></activity>
