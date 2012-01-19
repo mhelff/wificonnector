@@ -40,6 +40,10 @@ public class LocationData {
         addLocation("00:11:92:f8:9f:40", "A", 1, "Near E");
         addLocation("00:0f:90:72:3c:80", "E", 1, "1. from A");
         addLocation("00:11:92:f4:21:e0", "E", 1, "2. from A");
+        addLocation("00:0f:90:93:ee:a0", "D", 1, "1. from A");
+        addLocation("00:0f:90:94:67:90", "D", 1, "2. from A");
+        addLocation("00:19:a9:cc:f7:90", "C", 1, "1. from A");
+        addLocation("00:19:a9:cd:03:80", "C", 1, "2. from A");
         
         addLocation("00:12:43:48:10:c0", "E", 2, "2. from A");
         addLocation("00:13:1a:96:12:f0", "E", 2, "1. from A");
@@ -111,6 +115,8 @@ public class LocationData {
         
         // helffm home
         addLocation("00:1c:4a:07:a2:6d", "M", 2, "Dahoam");
+        // AWM
+        addLocation("00:24:fe:01:cb:87", "M", 8, "AWM Kantine")
     }
 
     private static void addLocation(String bssid, String block, int floor, String position) {
