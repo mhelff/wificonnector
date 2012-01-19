@@ -41,6 +41,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -51,6 +52,7 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -66,49 +68,46 @@ import android.widget.TextView;
  */
 public class WifiConnectorActivity extends Activity {
     private static WifiConnectorActivity mInst;
-    private boolean autoConnect;
-    private String mobileNumber;
-    
+    private StatusReceiver statusReceiver = null;
+
     protected final String L = "WifiConnectorActivity";
+
+    private Button connectButton;
+    private Button disconnectButton;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        Button b = (Button) this.findViewById(R.id.connectButton);
-        b.setOnClickListener(new OnClickListener() {
+        connectButton = (Button) this.findViewById(R.id.connectButton);
+        connectButton.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
-                new LoginTask(mobileNumber).execute(Boolean.FALSE);
+                unlockConnection();
             }
 
         });
-        Button b1 = (Button) this.findViewById(R.id.disconnectButton);
-        b1.setOnClickListener(new OnClickListener() {
+        disconnectButton = (Button) this.findViewById(R.id.disconnectButton);
+        disconnectButton.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
-                new LogoutTask(mobileNumber).execute(Boolean.FALSE);
+                lockConnection();
             }
 
         });
-        
+
         final ImageButton bPos = (ImageButton) this.findViewById(R.id.buttonPositionRefresh);
         bPos.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
                 // just trigger WiFi-Scanning
-                bPos.setEnabled(!((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE)).startScan());
+                bPos.setEnabled(!((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE))
+                        .startScan());
             }
 
         });
-        
-        
-        
-        
-        if(autoConnect) {
-            // TODO: start some background service to watch WiFi connection
-        }
+
     }
 
     public static WifiConnectorActivity instance() {
@@ -126,45 +125,47 @@ public class WifiConnectorActivity extends Activity {
     @Override
     public void onStart() {
         super.onStart();
-        // TODO: start location scanner
-        getPrefs();
-        
+        // start status receiver
+        statusReceiver = new StatusReceiver();
+        IntentFilter intentFilter = new IntentFilter(WifiConnectivityService.INTENT_STATUS_NOTIFICATION);
+        registerReceiver(statusReceiver, intentFilter);
+
         // check wifi
-        new LoginTask(mobileNumber).execute(Boolean.TRUE);
-        
+        checkConnection();
+
         // start a wifi scan for position update
         ((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE)).startScan();
-        // immediatly show position from old scan, most times thats quite accurate
+        // immediately show position from old scan, most times thats quite
+        // accurate
         updatePositionView();
-        
+
         mInst = this;
     }
 
     @Override
     public void onStop() {
         mInst = null;
-        // TODO: stop location scanner
+        // stop status scanner
+        unregisterReceiver(statusReceiver);
         super.onStop();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
-        menu.add(0, Menu.FIRST, 1, R.string.settings)
-        .setShortcut('9', 's')
-        .setIcon(android.R.drawable.ic_menu_preferences);
-        
-        menu.add(0, Menu.FIRST+1, 1, R.string.info)
-        .setShortcut('0', 'i')
-        .setIcon(android.R.drawable.ic_menu_info_details);
-        
+
+        menu.add(0, Menu.FIRST, 1, R.string.settings).setShortcut('9', 's')
+                .setIcon(android.R.drawable.ic_menu_preferences);
+
+        menu.add(0, Menu.FIRST + 1, 1, R.string.info).setShortcut('0', 'i')
+                .setIcon(android.R.drawable.ic_menu_info_details);
+
         return true;
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        
+
         case Menu.FIRST:
             Intent intent = new Intent();
             intent.setClass(this, WifiConnectorPreferences.class);
@@ -174,323 +175,91 @@ public class WifiConnectorActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void checkConnection() {
+        triggerService(WifiConnectivityService.COMMAND_CHECK_CONNECTION);
+    }
 
-    private void getPrefs() {
-        // Get the xml/preferences.xml preferences
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        autoConnect = prefs.getBoolean("autoConnect", false);
-        mobileNumber = prefs.getString("mobileNumber", "");
+    public void unlockConnection() {
+        triggerService(WifiConnectivityService.COMMAND_UNLOCK_CONNECTION);
     }
-    
-    public void triggerConnection() {
-        getPrefs();
-        
-        if(autoConnect) {
-            new LoginTask(mobileNumber).execute(Boolean.FALSE);
-        }
+
+    public void lockConnection() {
+        triggerService(WifiConnectivityService.COMMAND_LOCK_CONNECTION);
     }
-    
+
+    protected void triggerService(int command) {
+        Intent intent = new Intent(this, WifiConnectivityService.class);
+        intent.putExtra(WifiConnectivityService.INTENT_COMMAND, command);
+        startService(intent);
+    }
+
     public void updatePositionView() {
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        
+
         TextView position = (TextView) this.findViewById(R.id.position);
         String posText = "Unknown position";
-        
+
         List<ScanResult> results = wifiManager.getScanResults();
-        ScanResult strongest = null;
-        for(ScanResult scanResult : results) {
-            if("TelefonicaPublic".equals(scanResult.SSID) || "o2ZJ".equals(scanResult.SSID)) {
-                if(strongest == null || strongest.level < scanResult.level) {
-                    strongest = scanResult;
+        if (results != null) {
+            ScanResult strongest = null;
+            for (ScanResult scanResult : results) {
+                if ("TelefonicaPublic".equals(scanResult.SSID) || "o2ZJ".equals(scanResult.SSID)) {
+                    if (strongest == null || strongest.level < scanResult.level) {
+                        strongest = scanResult;
+                    }
+                }
+            }
+
+            if (strongest != null) {
+                Location location = LocationData.getLocation(strongest.BSSID);
+                if (location != null) {
+                    posText = location.getBlock() + location.getFloor() + " " + location.getPosition();
                 }
             }
         }
-        
-        if(strongest != null) {
-            Location location = LocationData.getLocation(strongest.BSSID);
-            if(location != null) {
-                posText = location.getBlock() + location.getFloor() + " " + location.getPosition();  
-            }
-        }
-        
+
         position.setText(posText);
         final ImageButton bPos = (ImageButton) this.findViewById(R.id.buttonPositionRefresh);
         bPos.setEnabled(true);
     }
 
-    private class LoginTask extends AsyncTask<Boolean, String, String> {
+    private class StatusReceiver extends BroadcastReceiver {
 
-        protected Context applicationContext;
-        protected WifiManager wifiManager;
-        protected HttpClient httpClient = new DefaultHttpClient();
-        protected HttpContext localContext = new BasicHttpContext();
-        private LoginToken loginToken = new LoginToken();
-        protected String mobileNumber;
-
-        public LoginTask(String mNumber) {
-            this.mobileNumber = mNumber;
-        }
-        
-        @Override
-        protected void onPreExecute() {
-            applicationContext = getApplicationContext();
-            wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            Button b = (Button) findViewById(R.id.connectButton);
-            b.setEnabled(false);
+        public StatusReceiver() {
+            // might be used or never :-)
         }
 
-        protected String doInBackground(Boolean... onlyCheck) {
-            // check if mobile number is set
-            checkMsisdn(mobileNumber);
-            if (isCancelled())
-                return null;
-            
-            // check if WiFi is ours
-            checkWifi(wifiManager);
-            if (isCancelled())
-                return null;
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(WifiConnectivityService.INTENT_STATUS_NOTIFICATION)) {
+                Bundle extras = intent.getExtras();
+                String mainStatus = extras.getString(WifiConnectivityService.EXTRA_MAIN_STATUS);
+                String detailStatus = extras.getString(WifiConnectivityService.EXTRA_DETAIL_STATUS);
+                int status = extras.getInt(WifiConnectivityService.EXTRA_STATUS_CODE);
 
-            // check if network is already unlocked
-            checkConnectivity(httpClient, true);
-            if (onlyCheck[0].booleanValue() || isCancelled())
-                return null;
+                TextView mainStatusView = (TextView) findViewById(R.id.largeStatus);
+                mainStatusView.setText(mainStatus);
+                TextView detailStatusView = (TextView) findViewById(R.id.smallStatus);
+                detailStatusView.setText(detailStatus);
 
-            // post mobile-number to login page
-            submitMSISDN(httpClient, mobileNumber);
-            if (isCancelled())
-                return null;
+                switch (status) {
 
-            // wait for SMS to arrive and parse token
-            waitForSMS();
-            if (isCancelled())
-                return null;
+                case WifiConnectivityService.STATUS_LOCKED:
+                    connectButton.setEnabled(true);
+                    disconnectButton.setEnabled(false);
+                    break;
 
-            // post token to confirmation page
-            submitToken(httpClient, loginToken);
-            if (isCancelled())
-                return null;
+                case WifiConnectivityService.STATUS_UNLOCKED:
+                    connectButton.setEnabled(false);
+                    disconnectButton.setEnabled(true);
+                    break;
 
-            // check connectivity to web page
-            checkConnectivity(httpClient, false);
-            return loginToken.getToken();
-        }
-
-        protected void onProgressUpdate(String... progress) {
-            setStatus(progress[0], progress[1]);
-        }
-
-        protected void onPostExecute(String result) {
-            Button b = (Button) findViewById(R.id.connectButton);
-            b.setEnabled(true);
-        }
-
-        @Override
-        protected void onCancelled() {
-            Button b = (Button) findViewById(R.id.connectButton);
-            b.setEnabled(true);
-        }
-        
-        protected void checkMsisdn(String msisdn) {
-            if (msisdn == null || msisdn.trim().length() == 0) {
-                // post error
-                publishProgress("Check app settings", "Please enter your mobile phone number first");
-                cancel(false);
-            }
-        }
-
-        protected void checkWifi(WifiManager wifiManager) {
-            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            if (wifiInfo == null || !"TelefonicaPublic".equals(wifiInfo.getSSID())) {
-                // post error
-                publishProgress("Not connected", "Not connected to TelefonicaPublic WiFi");
-                cancel(false);
-            } else {
-                publishProgress("TelefonicaPublic locked", "Press connect to unlock internet access");
-            }
-        }
-
-        protected void checkConnectivity(HttpClient httpClient, boolean beforeUnlock) {
-            final String mainStatus = beforeUnlock ? "Checking connectivity" : "Unlocking WiFi";
-            try {
-                if(beforeUnlock) {
-                    publishProgress(mainStatus, "Check if internet access is already enabled");
-                } else {
-                    publishProgress(mainStatus, "Checking internet connectivity");
-                }
-                HttpGet httpGet = new HttpGet("http://www.helff.net");
-                HttpResponse response = httpClient.execute(httpGet, localContext);
-                String result = "";
-
-                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    result += line + "\n";
-                }
-                if (result.contains("<title>helff.net</title>")) {
-                    if (beforeUnlock) {
-                        publishProgress("WiFi ready", "Internet access is unlocked, start surfing!");
-                        cancel(false);
-                    } else {
-                        publishProgress("WiFi ready", "Internet access is unlocked, start surfing!");
-                    }
-                } else {
-                    if (!beforeUnlock) {
-                        publishProgress(mainStatus, "Network is not unlocked, something failed!");
-                    } else {
-                    	publishProgress("TelefonicaPublic locked", "Press connect to unlock internet access");
-                    }
-                }
-                reader.close();
-                response.getEntity().consumeContent();
-            } catch (ClientProtocolException e) {
-                publishProgress(mainStatus, "Error checking network status, please retry");
-                Log.e(WifiConnectorActivity.class.getName(), "Network check failed1", e);
-                cancel(false);
-            } catch (IOException e) {
-                publishProgress(mainStatus, "Error checking network status, please retry");
-                Log.e(WifiConnectorActivity.class.getName(), "Network check failed2", e);
-                cancel(false);
-            }
-        }
-
-        protected void submitMSISDN(HttpClient httpClient, String msisdn) {
-            try {
-                // post mobile-number to login page
-                publishProgress("Unlocking WiFi", "Submitting mobile phone number " + mobileNumber);
-                HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/login.php?l=de");
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-                nameValuePairs.add(new BasicNameValuePair("handynr", msisdn));
-                nameValuePairs.add(new BasicNameValuePair("login", "Token per SMS zusenden &gt;"));
-                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                // Execute HTTP Post Request
-                HttpResponse response = httpClient.execute(httpPost, localContext);
-                response.getEntity().consumeContent();
-                publishProgress("Unlocking WiFi", "Submitted MSISDN: " + msisdn);
-            } catch (ClientProtocolException e) {
-                publishProgress("Unlocking WiFi", "Could not submit mobile phone number, please retry");
-                cancel(false);
-            } catch (IOException e) {
-                publishProgress("Unlocking WiFi", "Could not submit mobile phone number, please retry");
-                cancel(false);
-            }
-        }
-
-        protected void waitForSMS() {
-
-            // set up broadcast receiver
-            publishProgress("Unlocking WiFi", "Waiting for login token");
-            SMSReceiver receiver = new SMSReceiver(loginToken);
-            IntentFilter intentFilter = new IntentFilter(SMSReceiver.ACTION);
-            intentFilter.setPriority(100);
-            applicationContext.registerReceiver(receiver, intentFilter);
-
-            int iterations = 1;
-            // loop for 10 seconds and wait for SMS arriving
-            while (iterations < 20 && !this.isCancelled()) {
-                if (loginToken.isTokenSet()) {
+                default:
+                    connectButton.setEnabled(false);
+                    disconnectButton.setEnabled(false);
                     break;
                 }
-
-                // sleep a second
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // just finish then
-                    break;
-                }
-
-                iterations++;
-            }
-
-            // remove broadcast receiver
-            applicationContext.unregisterReceiver(receiver);
-            
-            if(loginToken.isTokenSet()) {
-                publishProgress("Unlocking WiFi", "Received token: " + loginToken.getToken());
-            } else {
-                publishProgress("Unlocking WiFi", "Token did not arrive within 10 seconds, please retry!");
-                cancel(false);
-            }
-        }
-
-        protected void submitToken(HttpClient httpClient, LoginToken token) {
-            try {
-                // post mobile-number to login page
-                publishProgress("Unlocking WiFi", "Submitting token: " + loginToken.getToken());
-                HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/token.php?l=de");
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-                nameValuePairs.add(new BasicNameValuePair("token", token.getToken()));
-                nameValuePairs.add(new BasicNameValuePair("submit", "Lossurfen &gt;"));
-                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                // Execute HTTP Post Request
-                httpClient.execute(httpPost, localContext);
-                HttpResponse response = httpClient.execute(httpPost, localContext);
-                response.getEntity().consumeContent();
-                publishProgress("Unlocking WiFi", "Submitted token: " + token.getToken());
-            } catch (ClientProtocolException e) {
-                publishProgress("Unlocking WiFi", "Could not submit token, please retry");
-                cancel(false);
-            } catch (IOException e) {
-                publishProgress("Unlocking WiFi", "Could not submit token, please retry");
-                cancel(false);
             }
         }
     }
 
-    private class LogoutTask extends LoginTask {
-
-        public LogoutTask(String mNumber) {
-            super(mNumber);
-        }
-        
-        @Override
-        protected void onPreExecute() {
-            applicationContext = getApplicationContext();
-            wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            Button b = (Button) findViewById(R.id.disconnectButton);
-            b.setEnabled(false);
-        }
-
-        protected String doInBackground(Boolean... onlyCheck) {
-            // check if WiFi is ours
-            checkWifi(wifiManager);
-            if (isCancelled())
-                return null;
-
-            // check connectivity to google or other page
-            logout(httpClient, "");
-            return "Disconnected";
-        }
-
-        protected void onPostExecute(String result) {
-            Button b = (Button) findViewById(R.id.disconnectButton);
-            b.setEnabled(true);
-        }
-
-        @Override
-        protected void onCancelled() {
-            // remove BroadcastReceiver if left over
-        }
-
-        protected void logout(HttpClient httpClient, String msisdn) {
-            try {
-                publishProgress("Logging off", "Logging off Telefonica WiFi internet access");
-                // post mobile-number to login page
-                HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/index.php?l=de");
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-                nameValuePairs.add(new BasicNameValuePair("exit", "Ja, diese Sitzung jetzt beenden &gt;"));
-                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                // Execute HTTP Post Request
-                HttpResponse response = httpClient.execute(httpPost, localContext);
-                response.getEntity().consumeContent();
-                publishProgress("TelefonicaPublic locked", "Press connect to unlock internet access");
-            } catch (ClientProtocolException e) {
-                publishProgress("Logging off", "Could not log off, please retry");
-                cancel(false);
-            } catch (IOException e) {
-                publishProgress("Logging off", "Could not log off, please retry");
-                cancel(false);
-            }
-        }
-    }
 }

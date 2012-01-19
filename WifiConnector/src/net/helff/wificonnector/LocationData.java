@@ -116,7 +116,7 @@ public class LocationData {
         // helffm home
         addLocation("00:1c:4a:07:a2:6d", "M", 2, "Dahoam");
         // AWM
-        addLocation("00:24:fe:01:cb:87", "M", 8, "AWM Kantine")
+        addLocation("00:24:fe:01:cb:87", "M", 8, "AWM Kantine");
     }
 
     private static void addLocation(String bssid, String block, int floor, String position) {

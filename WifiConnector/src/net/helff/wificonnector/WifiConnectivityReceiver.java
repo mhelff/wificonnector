@@ -23,9 +23,11 @@ package net.helff.wificonnector;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class WifiConnectivityReceiver extends BroadcastReceiver {
@@ -45,9 +47,16 @@ public class WifiConnectivityReceiver extends BroadcastReceiver {
 
             NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
             if (networkInfo != null && networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-                if (a != null) {
-                    a.triggerConnection();
-                }
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                boolean autoConnect = prefs.getBoolean("autoConnect", false);
+
+                Log.d("WifiConnectivityReceiver", "triggering WifiConnectivityService with autoConnect=" + autoConnect);
+                
+                int command = autoConnect ? WifiConnectivityService.COMMAND_UNLOCK_CONNECTION
+                        : WifiConnectivityService.COMMAND_CHECK_CONNECTION;
+                Intent msgIntent = new Intent(context, WifiConnectivityService.class);
+                msgIntent.putExtra(WifiConnectivityService.INTENT_COMMAND, command);
+                context.startService(msgIntent);
             }
 
         }

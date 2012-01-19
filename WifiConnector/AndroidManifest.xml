@@ -24,14 +24,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name="net.helff.wificonnector.WifiConnectivityReceiver" 
+        <receiver android:name=".WifiConnectivityReceiver" 
             android:process="@string/app_name">
             <intent-filter>
                 <action android:name="android.net.wifi.STATE_CHANGE"/>
                 <action android:name="android.net.wifi.SCAN_RESULTS"/>
             </intent-filter>
         </receiver>
-        <activity android:name="WifiConnectorPreferences"></activity>
+        <activity android:name=".WifiConnectorPreferences"></activity>
+        <service android:name=".WifiConnectivityService"></service>
     </application>
 
 </manifest>

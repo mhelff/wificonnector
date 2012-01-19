@@ -21,7 +21,6 @@
             android:layout_height="wrap_content"
             android:text="@string/telefonicaPublic"
             android:textAppearance="?android:attr/textAppearanceLarge" />
-
     </LinearLayout>
 
     <LinearLayout
@@ -55,7 +54,6 @@
                 android:layout_height="wrap_content"
                 android:text="Small Text"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
-
         </LinearLayout>
     </LinearLayout>
 
@@ -77,7 +75,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/disconnect" />
-
     </LinearLayout>
 
     <LinearLayout
@@ -85,11 +82,18 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="fill|fill_horizontal|fill_vertical" >
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
 
         <LinearLayout
             android:id="@+id/linearLayout6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
             android:orientation="vertical" >
 
             <TextView
@@ -111,7 +115,9 @@
             android:id="@+id/buttonPositionRefresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:src="@drawable/ic_menu_refresh" />
-    </LinearLayout>
+
+    </RelativeLayout>
 
 </LinearLayout>
