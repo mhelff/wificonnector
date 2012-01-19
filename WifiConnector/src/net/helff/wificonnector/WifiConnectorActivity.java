@@ -94,7 +94,7 @@ public class WifiConnectorActivity extends Activity {
         });
         
         final ImageButton bPos = (ImageButton) this.findViewById(R.id.buttonPositionRefresh);
-        b1.setOnClickListener(new OnClickListener() {
+        bPos.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
                 // just trigger WiFi-Scanning
@@ -134,6 +134,8 @@ public class WifiConnectorActivity extends Activity {
         
         // start a wifi scan for position update
         ((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE)).startScan();
+        // immediatly show position from old scan, most times thats quite accurate
+        updatePositionView();
         
         mInst = this;
     }
@@ -250,7 +252,7 @@ public class WifiConnectorActivity extends Activity {
 
             // check if network is already unlocked
             checkConnectivity(httpClient, true);
-            if (isCancelled())
+            if (onlyCheck[0].booleanValue() || isCancelled())
                 return null;
 
             // post mobile-number to login page
@@ -334,6 +336,8 @@ public class WifiConnectorActivity extends Activity {
                 } else {
                     if (!beforeUnlock) {
                         publishProgress(mainStatus, "Network is not unlocked, something failed!");
+                    } else {
+                    	publishProgress("TelefonicaPublic locked", "Press connect to unlock internet access");
                     }
                 }
                 reader.close();
@@ -361,7 +365,7 @@ public class WifiConnectorActivity extends Activity {
                 // Execute HTTP Post Request
                 HttpResponse response = httpClient.execute(httpPost, localContext);
                 response.getEntity().consumeContent();
-                publishProgress("Submitted MSISDN: " + msisdn);
+                publishProgress("Unlocking WiFi", "Submitted MSISDN: " + msisdn);
             } catch (ClientProtocolException e) {
                 publishProgress("Unlocking WiFi", "Could not submit mobile phone number, please retry");
                 cancel(false);
