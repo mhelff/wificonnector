@@ -114,13 +114,17 @@ public class LocationData {
         addLocation("00:1a:30:bb:96:50", "C", 8, "SŸd");
         
         // helffm home
-        addLocation("00:1c:4a:07:a2:6d", "M", 2, "Dahoam");
+        addLocation("Zuhause", "00:1c:4a:07:a2:6d", "", 2, "Dahoam");
         // AWM
-        addLocation("00:24:fe:01:cb:87", "M", 8, "AWM Kantine");
+        addLocation("AWM", "00:24:fe:01:cb:87", "", 8, "Kantine");
     }
 
     private static void addLocation(String bssid, String block, int floor, String position) {
         locations.put(bssid, new Location(bssid, floor, block, position));
+    }
+    
+    private static void addLocation(String building, String bssid, String block, int floor, String position) {
+        locations.put(bssid, new Location(building, bssid, floor, block, position));
     }
     
     public static Location getLocation(String bssid) {
@@ -140,6 +144,14 @@ public class LocationData {
             this.block = block;
             this.position = position;
             this.building = "GBR";
+        }
+        
+        protected Location(String building, String bssid, int floor, String block, String position) {
+            this.bssid = bssid;
+            this.floor = floor;
+            this.block = block;
+            this.position = position;
+            this.building = building;
         }
 
         public String getBssid() {
