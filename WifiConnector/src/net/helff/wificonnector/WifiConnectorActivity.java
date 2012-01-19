@@ -20,39 +20,19 @@
 
 package net.helff.wificonnector;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import net.helff.wificonnector.LocationData.Location;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -60,6 +40,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -74,6 +55,7 @@ public class WifiConnectorActivity extends Activity {
 
     private Button connectButton;
     private Button disconnectButton;
+    private ImageView statusImage;
 
     /** Called when the activity is first created. */
     @Override
@@ -107,6 +89,8 @@ public class WifiConnectorActivity extends Activity {
             }
 
         });
+
+        statusImage = (ImageView) this.findViewById(R.id.statusImage);
 
     }
 
@@ -171,6 +155,21 @@ public class WifiConnectorActivity extends Activity {
             intent.setClass(this, WifiConnectorPreferences.class);
             startActivity(intent);
             return true;
+
+        case Menu.FIRST + 1:
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+            alert.setTitle("About");
+            alert.setMessage("WifiConnector\nCopyright (C) 2012 Martin Helff\nThis software is distributed under "
+                    + "the terms of the GNU General Public License v3\nhttps://github.com/mhelff/wificonnector/");
+
+            alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // nothing
+                }
+            });
+
+            alert.show();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -214,7 +213,8 @@ public class WifiConnectorActivity extends Activity {
             if (strongest != null) {
                 Location location = LocationData.getLocation(strongest.BSSID);
                 if (location != null) {
-                    posText = location.getBuilding() + " " + location.getBlock() + location.getFloor() + " " + location.getPosition();
+                    posText = location.getBuilding() + " " + location.getBlock() + location.getFloor() + " "
+                            + location.getPosition();
                 }
             }
         }
@@ -247,16 +247,19 @@ public class WifiConnectorActivity extends Activity {
                 case WifiConnectivityService.STATUS_LOCKED:
                     connectButton.setEnabled(true);
                     disconnectButton.setEnabled(false);
+                    statusImage.setImageResource(R.drawable.btn_check_on_disabled_holo_light);
                     break;
 
                 case WifiConnectivityService.STATUS_UNLOCKED:
                     connectButton.setEnabled(false);
                     disconnectButton.setEnabled(true);
+                    statusImage.setImageResource(R.drawable.btn_check_on_focused_holo_dark);
                     break;
 
                 default:
                     connectButton.setEnabled(false);
                     disconnectButton.setEnabled(false);
+                    statusImage.setImageResource(R.drawable.btn_check_on_disabled_holo_dark);
                     break;
                 }
             }

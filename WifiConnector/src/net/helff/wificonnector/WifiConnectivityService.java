@@ -70,8 +70,8 @@ public class WifiConnectivityService extends IntentService {
     public static final int STATUS_UNLOCKING = 2;
     public static final int STATUS_UNLOCKED = 3;
 
-    private String mainStatus;
-    private String detailStatus;
+    private String mainStatus = "Initializing";
+    private String detailStatus = "Please wait";
     private int statusCode;
 
     private String mobileNumber;
@@ -90,7 +90,9 @@ public class WifiConnectivityService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         int cmd = intent.getIntExtra(INTENT_COMMAND, COMMAND_REFRESH_STATUS);
-
+        // Always send status first for fast gui response
+        sendStatusIntent();
+        
         switch (cmd) {
 
         case COMMAND_SEND_STATUS:
