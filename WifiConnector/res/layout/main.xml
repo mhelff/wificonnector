@@ -38,7 +38,6 @@
             android:id="@+id/linearLayout5"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:layout_weight="0.09"
             android:orientation="vertical" >
 
             <TextView

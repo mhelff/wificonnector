@@ -203,7 +203,8 @@ public class WifiConnectorActivity extends Activity {
         if (results != null) {
             ScanResult strongest = null;
             for (ScanResult scanResult : results) {
-                if ("TelefonicaPublic".equals(scanResult.SSID) || "o2ZJ".equals(scanResult.SSID)) {
+                // just check if data is in our location database
+                if (LocationData.getLocation(scanResult.BSSID) != null) {
                     if (strongest == null || strongest.level < scanResult.level) {
                         strongest = scanResult;
                     }
@@ -213,7 +214,7 @@ public class WifiConnectorActivity extends Activity {
             if (strongest != null) {
                 Location location = LocationData.getLocation(strongest.BSSID);
                 if (location != null) {
-                    posText = location.getBlock() + location.getFloor() + " " + location.getPosition();
+                    posText = location.getBuilding() + " " + location.getBlock() + location.getFloor() + " " + location.getPosition();
                 }
             }
         }
