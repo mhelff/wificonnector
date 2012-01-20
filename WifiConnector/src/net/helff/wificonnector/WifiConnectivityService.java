@@ -191,7 +191,10 @@ public class WifiConnectivityService extends IntentService {
         this.mainStatus = main;
         this.detailStatus = detail;
         this.statusCode = status;
-
+        
+        // should be Log.d?
+        Log.i("WifiConnectivityService", detailStatus);
+        
         sendStatusIntent();
     }
 
