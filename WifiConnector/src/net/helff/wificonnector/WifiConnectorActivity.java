@@ -38,7 +38,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -48,33 +47,36 @@ import android.widget.TextView;
  * 
  */
 public class WifiConnectorActivity extends Activity {
-    private static WifiConnectorActivity mInst;
     private StatusReceiver statusReceiver = null;
 
-    protected final String L = "WifiConnectorActivity";
+    public final static String TAG = "WifiConnectorActivity";
 
-    private Button connectButton;
-    private Button disconnectButton;
+    private ImageView connectButton;
     private ImageView statusImage;
+    private TextView positionView;
+
+    private WifiManager wifiManager;
+
+    private int status = WifiConnectivityService.STATUS_NOT_CONNECTED;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(savedInstanceState != null) {
+            status = savedInstanceState.getInt("connectionStatus", WifiConnectivityService.STATUS_NOT_CONNECTED);
+        }
+        
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
         setContentView(R.layout.main);
-        connectButton = (Button) this.findViewById(R.id.connectButton);
+        connectButton = (ImageView) this.findViewById(R.id.connectButton);
         connectButton.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
-                unlockConnection();
-            }
-
-        });
-        disconnectButton = (Button) this.findViewById(R.id.disconnectButton);
-        disconnectButton.setOnClickListener(new OnClickListener() {
-
-            public void onClick(View v) {
-                lockConnection();
+                connectButton.setEnabled(false);
+                flipConnection();
             }
 
         });
@@ -84,22 +86,19 @@ public class WifiConnectorActivity extends Activity {
 
             public void onClick(View v) {
                 // just trigger WiFi-Scanning
-                bPos.setEnabled(!((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE))
-                        .startScan());
+                bPos.setEnabled(!wifiManager.startScan());
             }
 
         });
 
         statusImage = (ImageView) this.findViewById(R.id.statusImage);
-
-    }
-
-    public static WifiConnectorActivity instance() {
-        return mInst;
+        positionView = (TextView) this.findViewById(R.id.position);
+        
+        updateConnectButton(status);
     }
 
     public void setStatus(String status, String detail) {
-        Log.i(L, status + "; " + detail);
+        Log.i(TAG, status + "; " + detail);
         TextView largeStatus = (TextView) this.findViewById(R.id.largeStatus);
         largeStatus.setText(status);
         TextView detailStatus = (TextView) this.findViewById(R.id.smallStatus);
@@ -110,28 +109,56 @@ public class WifiConnectorActivity extends Activity {
     public void onStart() {
         super.onStart();
         // start status receiver
-        statusReceiver = new StatusReceiver();
-        IntentFilter intentFilter = new IntentFilter(WifiConnectivityService.INTENT_STATUS_NOTIFICATION);
-        registerReceiver(statusReceiver, intentFilter);
+        startReceiver();
 
         // check wifi
         checkConnection();
 
         // start a wifi scan for position update
-        ((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE)).startScan();
+        wifiManager.startScan();
         // immediately show position from old scan, most times thats quite
         // accurate
         updatePositionView();
-
-        mInst = this;
     }
 
     @Override
-    public void onStop() {
-        mInst = null;
+    public void onPause() {
         // stop status scanner
-        unregisterReceiver(statusReceiver);
-        super.onStop();
+        stopReceiver();
+
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        startReceiver();
+        // trigger update
+        wifiManager.startScan();
+        super.onResume();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle bundle) {
+        // stop status scanner
+        stopReceiver();
+        bundle.putInt("connectionStatus", status);
+        super.onSaveInstanceState(bundle);
+    }
+
+    private void startReceiver() {
+        if (statusReceiver == null) {
+            statusReceiver = new StatusReceiver();
+            IntentFilter intentFilter = new IntentFilter(StatusIntent.INTENT_STATUS_NOTIFICATION);
+            intentFilter.addAction(LocationIntent.INTENT_LOCATION_NOTIFICATION);
+            registerReceiver(statusReceiver, intentFilter);
+        }
+    }
+
+    private void stopReceiver() {
+        if (statusReceiver != null) {
+            unregisterReceiver(statusReceiver);
+            statusReceiver = null;
+        }
     }
 
     @Override
@@ -174,16 +201,16 @@ public class WifiConnectorActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void checkConnection() {
+    private void checkConnection() {
         triggerService(WifiConnectivityService.COMMAND_CHECK_CONNECTION);
     }
 
-    public void unlockConnection() {
-        triggerService(WifiConnectivityService.COMMAND_UNLOCK_CONNECTION);
-    }
-
-    public void lockConnection() {
-        triggerService(WifiConnectivityService.COMMAND_LOCK_CONNECTION);
+    private void flipConnection() {
+        if(status == WifiConnectivityService.STATUS_LOCKED) {
+            triggerService(WifiConnectivityService.COMMAND_UNLOCK_CONNECTION);
+        } else if(status == WifiConnectivityService.STATUS_UNLOCKED) {
+            triggerService(WifiConnectivityService.COMMAND_LOCK_CONNECTION);
+        }
     }
 
     protected void triggerService(int command) {
@@ -193,9 +220,6 @@ public class WifiConnectorActivity extends Activity {
     }
 
     public void updatePositionView() {
-        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-        TextView position = (TextView) this.findViewById(R.id.position);
         String posText = "Unknown position";
 
         List<ScanResult> results = wifiManager.getScanResults();
@@ -219,9 +243,36 @@ public class WifiConnectorActivity extends Activity {
             }
         }
 
-        position.setText(posText);
+        positionView.setText(posText);
         final ImageButton bPos = (ImageButton) this.findViewById(R.id.buttonPositionRefresh);
         bPos.setEnabled(true);
+    }
+    
+    private void updateConnectButton(int status) {
+        switch (status) {
+
+        case WifiConnectivityService.STATUS_LOCKED:
+            connectButton.setEnabled(true);
+            connectButton.setImageResource(R.drawable.connect);
+            statusImage.setImageResource(R.drawable.btn_check_on_disabled_holo_light);
+            break;
+
+        case WifiConnectivityService.STATUS_UNLOCKED:
+            connectButton.setEnabled(true);
+            connectButton.setImageResource(R.drawable.disconnect);
+            statusImage.setImageResource(R.drawable.btn_check_on_focused_holo_dark);
+            break;
+
+        default:
+            connectButton.setEnabled(false);
+            connectButton.setImageResource(R.drawable.connect);
+            statusImage.setImageResource(R.drawable.btn_check_on_disabled_holo_dark);
+            break;
+        }
+    }
+    
+    private void setStatus(int s) {
+        status = s;
     }
 
     private class StatusReceiver extends BroadcastReceiver {
@@ -231,37 +282,23 @@ public class WifiConnectorActivity extends Activity {
         }
 
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(WifiConnectivityService.INTENT_STATUS_NOTIFICATION)) {
+            if (intent.getAction().equals(StatusIntent.INTENT_STATUS_NOTIFICATION)) {
                 Bundle extras = intent.getExtras();
-                String mainStatus = extras.getString(WifiConnectivityService.EXTRA_MAIN_STATUS);
-                String detailStatus = extras.getString(WifiConnectivityService.EXTRA_DETAIL_STATUS);
-                int status = extras.getInt(WifiConnectivityService.EXTRA_STATUS_CODE);
+                String mainStatus = extras.getString(StatusIntent.EXTRA_MAIN_STATUS);
+                String detailStatus = extras.getString(StatusIntent.EXTRA_DETAIL_STATUS);
+                int status = extras.getInt(StatusIntent.EXTRA_STATUS_CODE);
 
                 TextView mainStatusView = (TextView) findViewById(R.id.largeStatus);
                 mainStatusView.setText(mainStatus);
                 TextView detailStatusView = (TextView) findViewById(R.id.smallStatus);
                 detailStatusView.setText(detailStatus);
 
-                switch (status) {
+                setStatus(status);
+                updateConnectButton(status);
+            }
 
-                case WifiConnectivityService.STATUS_LOCKED:
-                    connectButton.setEnabled(true);
-                    disconnectButton.setEnabled(false);
-                    statusImage.setImageResource(R.drawable.btn_check_on_disabled_holo_light);
-                    break;
-
-                case WifiConnectivityService.STATUS_UNLOCKED:
-                    connectButton.setEnabled(false);
-                    disconnectButton.setEnabled(true);
-                    statusImage.setImageResource(R.drawable.btn_check_on_focused_holo_dark);
-                    break;
-
-                default:
-                    connectButton.setEnabled(false);
-                    disconnectButton.setEnabled(false);
-                    statusImage.setImageResource(R.drawable.btn_check_on_disabled_holo_dark);
-                    break;
-                }
+            if (intent.getAction().equals(LocationIntent.INTENT_LOCATION_NOTIFICATION)) {
+                updatePositionView();
             }
         }
     }

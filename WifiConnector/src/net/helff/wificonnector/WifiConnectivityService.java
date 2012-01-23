@@ -39,6 +39,9 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -50,20 +53,17 @@ import android.util.Log;
 
 public class WifiConnectivityService extends IntentService {
 
-    public static final String EXTRA_MAIN_STATUS = "mainStatus";
-    public static final String EXTRA_DETAIL_STATUS = "detailStatus";
-    public static final String EXTRA_STATUS_CODE = "statusCode";
-
-    public static final String INTENT_STATUS_NOTIFICATION = "net.helff.wificonnector.CONNECTION_STATUS";
-
     public static final String INTENT_COMMAND = "intent-command";
+
+    public static final String TAG = "WifiConnetivityService";
 
     public static final int COMMAND_SEND_STATUS = 1;
     public static final int COMMAND_REFRESH_STATUS = 2;
     public static final int COMMAND_CHECK_CONNECTION = 3;
     public static final int COMMAND_UNLOCK_CONNECTION = 4;
-    public static final int COMMAND_LOCK_CONNECTION = 5;
-    
+    public static final int COMMAND_AUTO_UNLOCK_CONNECTION = 5;
+    public static final int COMMAND_LOCK_CONNECTION = 6;
+
     public static final int STATUS_CONFIG_ERROR = -1;
     public static final int STATUS_NOT_CONNECTED = 0;
     public static final int STATUS_LOCKED = 1;
@@ -76,8 +76,11 @@ public class WifiConnectivityService extends IntentService {
 
     private String mobileNumber;
 
-    private HttpClient httpClient = new DefaultHttpClient();
-    private HttpContext localContext = new BasicHttpContext();
+    private HttpClient httpClient;
+    private HttpContext localContext;
+    private WifiManager wifiManager;
+    
+    private boolean notify = false;
 
     public WifiConnectivityService() {
         super(WifiConnectivityService.class.getName());
@@ -88,10 +91,25 @@ public class WifiConnectivityService extends IntentService {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        // Get the xml/preferences.xml preferences
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        // autoConnect = prefs.getBoolean("autoConnect", false);
+        mobileNumber = prefs.getString("mobileNumber", "");
+
+        httpClient = new DefaultHttpClient();
+        localContext = new BasicHttpContext();
+        wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+    }
+
+    @Override
     protected void onHandleIntent(Intent intent) {
         int cmd = intent.getIntExtra(INTENT_COMMAND, COMMAND_REFRESH_STATUS);
         // Always send status first for fast gui response
         sendStatusIntent();
+
+        notify = false;
         
         switch (cmd) {
 
@@ -101,16 +119,9 @@ public class WifiConnectivityService extends IntentService {
             break;
 
         case COMMAND_CHECK_CONNECTION:
-            readPreferences();
             try {
-                // check if mobile number is set
-                checkMsisdn(mobileNumber);
-
-                // check if WiFi is ours
-                checkWifi();
-
                 // check if network is already unlocked
-                checkConnectivity(httpClient, localContext, true);
+                checkConnectivity();
             } catch (ConnectionWorkflowException e) {
                 if (e.getCause() != null) {
                     Log.e("WifiConnectivityService", e.getMessage(), e.getCause());
@@ -120,17 +131,15 @@ public class WifiConnectivityService extends IntentService {
             }
             break;
 
+        case COMMAND_AUTO_UNLOCK_CONNECTION:
+            notify = true;
+            
         case COMMAND_UNLOCK_CONNECTION:
-            readPreferences();
             try {
-                // check if mobile number is set
-                checkMsisdn(mobileNumber);
-
-                // check if WiFi is ours
-                checkWifi();
-
                 // check if network is already unlocked
-                checkConnectivity(httpClient, localContext, true);
+                if (checkConnectivity()) {
+                    break;
+                }
 
                 // post mobile-number to login page
                 submitMSISDN(httpClient, localContext, mobileNumber);
@@ -142,7 +151,7 @@ public class WifiConnectivityService extends IntentService {
                 submitToken(httpClient, localContext, loginToken);
 
                 // check connectivity to web page
-                checkConnectivity(httpClient, localContext, false);
+                checkInternetAccess(httpClient, localContext);
             } catch (ConnectionWorkflowException e) {
                 if (e.getCause() != null) {
                     Log.e("WifiConnectivityService", e.getMessage(), e.getCause());
@@ -169,20 +178,8 @@ public class WifiConnectivityService extends IntentService {
         }
     }
 
-    protected void readPreferences() {
-        // Get the xml/preferences.xml preferences
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        // autoConnect = prefs.getBoolean("autoConnect", false);
-        mobileNumber = prefs.getString("mobileNumber", "");
-    }
-
     protected void sendStatusIntent() {
-        Intent statusIntent = new Intent();
-
-        statusIntent.setAction(INTENT_STATUS_NOTIFICATION);
-        statusIntent.putExtra(EXTRA_MAIN_STATUS, mainStatus);
-        statusIntent.putExtra(EXTRA_DETAIL_STATUS, detailStatus);
-        statusIntent.putExtra(EXTRA_STATUS_CODE, statusCode);
+        Intent statusIntent = new StatusIntent(mainStatus, detailStatus, statusCode);
 
         this.sendBroadcast(statusIntent);
     }
@@ -191,74 +188,105 @@ public class WifiConnectivityService extends IntentService {
         this.mainStatus = main;
         this.detailStatus = detail;
         this.statusCode = status;
-        
+
         // should be Log.d?
         Log.i("WifiConnectivityService", detailStatus);
-        
+
         sendStatusIntent();
+        if(notify) {
+            sendNotification(detail);
+        }
+    }
+
+    protected void sendNotification(String msg) {
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Notification notification = new Notification(/* your notification */);
+                    
+        Intent intent = new Intent(this, WifiConnectorActivity.class); 
+        intent.setAction("android.intent.action.MAIN"); 
+        intent.addCategory("android.intent.category.LAUNCHER"); 
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, 
+        intent, 0);
+        
+        notification.setLatestEventInfo(this.getApplicationContext(), "WifiConnector", msg, pendingIntent);
+        notificationManager.notify(1, notification);
+    
+    }
+
+    protected boolean checkConnectivity() throws ConnectionWorkflowException {
+        boolean unlocked = false;
+
+        // check if mobile number is set
+        checkMsisdn(mobileNumber);
+
+        // check if WiFi is ours
+        checkWifi();
+
+        // check if network is already unlocked
+        unlocked = checkInternetAccess(httpClient, localContext);
+
+        return unlocked;
     }
 
     protected void checkMsisdn(String msisdn) throws ConnectionWorkflowException {
         if (msisdn == null || msisdn.trim().length() == 0) {
             // post error
-            publishProgress("Check app settings", "Please enter your mobile phone number first", STATUS_CONFIG_ERROR);
+            publishProgress("Check app settings", "Mobile phone number not set", STATUS_CONFIG_ERROR);
             throw new ConnectionWorkflowException("mobileNumber not set");
         }
     }
 
     protected void checkWifi() throws ConnectionWorkflowException {
-        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         if (wifiInfo == null || !"TelefonicaPublic".equals(wifiInfo.getSSID())) {
             // post error
-            publishProgress("Not connected", "Not connected to TelefonicaPublic WiFi", STATUS_NOT_CONNECTED);
+            publishProgress("Not connected", "Not connected to TelefonicaPublic", STATUS_NOT_CONNECTED);
             throw new ConnectionWorkflowException("No connection to TelefonicaPublic");
-        } else {
-            publishProgress("TelefonicaPublic locked", "Press connect to unlock internet access", STATUS_LOCKED);
         }
     }
 
-    protected void checkConnectivity(HttpClient httpClient, HttpContext localContext, boolean beforeUnlock)
+    protected boolean checkInternetAccess(HttpClient httpClient, HttpContext localContext)
             throws ConnectionWorkflowException {
-        final String mainStatus = beforeUnlock ? "Checking connectivity" : "Unlocking WiFi";
+
+        BufferedReader reader = null;
+        boolean unlocked = false;
+
         try {
-            if (beforeUnlock) {
-                publishProgress(mainStatus, "Check if internet access is already enabled", STATUS_LOCKED);
-            } else {
-                publishProgress(mainStatus, "Checking internet connectivity", STATUS_LOCKED);
-            }
             HttpGet httpGet = new HttpGet("http://www.helff.net");
             HttpResponse response = httpClient.execute(httpGet, localContext);
             String result = "";
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             String line = null;
             while ((line = reader.readLine()) != null) {
                 result += line + "\n";
             }
             if (result.contains("<title>helff.net</title>")) {
-                if (beforeUnlock) {
-                    publishProgress("WiFi ready", "Internet access is unlocked, start surfing!", STATUS_UNLOCKED);
-                    throw new ConnectionWorkflowException("TelefonicaPublic already unlocked");
-                } else {
-                    publishProgress("WiFi ready", "Internet access is unlocked, start surfing!", STATUS_UNLOCKED);
-                }
+                unlocked = true;
+                publishProgress("WiFi ready", "Internet access is unlocked", STATUS_UNLOCKED);
             } else {
-                if (!beforeUnlock) {
-                    publishProgress(mainStatus, "Network is not unlocked, something failed!", STATUS_LOCKED);
-                } else {
-                    publishProgress("TelefonicaPublic locked", "Press connect to unlock internet access", STATUS_LOCKED);
-                }
+                publishProgress("TelefonicaPublic locked", "Press connect to unlock", STATUS_LOCKED);
             }
             reader.close();
             response.getEntity().consumeContent();
         } catch (ClientProtocolException e) {
-            publishProgress(mainStatus, "Error checking network status, please retry", STATUS_LOCKED);
+            publishProgress(mainStatus, "Error checking network status", STATUS_LOCKED);
             throw new ConnectionWorkflowException("error checking connectivity", e);
         } catch (IOException e) {
-            publishProgress(mainStatus, "Error checking network status, please retry", STATUS_LOCKED);
+            publishProgress(mainStatus, "Error checking network status", STATUS_LOCKED);
             throw new ConnectionWorkflowException("error checking connectivity", e);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Could not close reader", e);
+                }
+            }
         }
+
+        return unlocked;
     }
 
     protected void submitMSISDN(HttpClient httpClient, HttpContext localContext, String msisdn)
@@ -277,10 +305,10 @@ public class WifiConnectivityService extends IntentService {
             response.getEntity().consumeContent();
             publishProgress("Unlocking WiFi", "Submitted MSISDN: " + msisdn, STATUS_UNLOCKING);
         } catch (ClientProtocolException e) {
-            publishProgress("Unlocking WiFi", "Could not submit mobile phone number, please retry", STATUS_LOCKED);
+            publishProgress("Unlocking WiFi", "Mobile phone number not registered", STATUS_LOCKED);
             throw new ConnectionWorkflowException("error submitting msisdn form", e);
         } catch (IOException e) {
-            publishProgress("Unlocking WiFi", "Could not submit mobile phone number, please retry", STATUS_LOCKED);
+            publishProgress("Unlocking WiFi", "Could not submit mobile phone number", STATUS_LOCKED);
             throw new ConnectionWorkflowException("error submitting msisdn form", e);
         }
     }

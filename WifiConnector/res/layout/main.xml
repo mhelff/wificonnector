@@ -19,12 +19,14 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/telefonicaPublic"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:layout_marginBottom="20dp"
+            android:text="@string/intro"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/linearLayout4"
+    <RelativeLayout
+        android:id="@+id/relativeLayout2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
 
@@ -32,19 +34,22 @@
             android:id="@+id/statusImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
             android:src="@drawable/btn_check_on_disabled_holo_dark" />
 
         <LinearLayout
             android:id="@+id/linearLayout5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/statusImage"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/largeStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Large Text"
+                android:text="@string/telefonicaPublic"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
@@ -53,35 +58,22 @@
                 android:layout_height="wrap_content"
                 android:text="Small Text"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <LinearLayout
-                android:id="@+id/linearLayout1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical|fill_horizontal|fill_vertical|right" >
-
-                <Button
-                    android:id="@+id/connectButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="fill_horizontal"
-                    android:text="@string/connect" />
-
-                <Button
-                    android:id="@+id/disconnectButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/disconnect" />
-            </LinearLayout>
-
         </LinearLayout>
-    </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/connectButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/connect" />
+
+    </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/linearLayout7"
+        android:id="@+id/linearLayout4"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="fill|fill_horizontal|fill_vertical" >
+        android:layout_height="10dp" >
     </LinearLayout>
 
     <RelativeLayout
@@ -90,10 +82,18 @@
         android:layout_height="wrap_content" >
 
         <LinearLayout
+            android:id="@+id/LinearLayout01"
+            android:layout_width="10dp"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true" >
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/linearLayout6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/LinearLayout01"
             android:orientation="vertical" >
 
             <TextView

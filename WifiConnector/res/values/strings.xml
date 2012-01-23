@@ -10,5 +10,6 @@
     <string name="info">Info</string>
     <string name="position_headline">Your position:</string>
     <string name="position_default">Unknown</string>
+    <string name="intro">Welcome to WifiConnector.\nThis app will unlock your guest access to TelefonicaPublic.</string>
 
 </resources>

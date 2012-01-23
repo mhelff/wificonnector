@@ -20,27 +20,36 @@
 
 package net.helff.wificonnector;
 
+import java.util.List;
+
+import net.helff.wificonnector.LocationData.Location;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class WifiConnectivityReceiver extends BroadcastReceiver {
 
+    public static final String TAG = "WifiConnectivityReceiver";
+    
+    private WifiManager wifiManager = null;
+    
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i("WifiConnectivityReceiver", "action: " + intent.getAction());
+        Log.i(TAG, "action: " + intent.getAction());
 
-        WifiConnectorActivity a = WifiConnectorActivity.instance();
         if (intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
-            if (a != null) {
-                a.updatePositionView();
+            if(wifiManager == null) {
+                wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
             }
+            Intent locationIntent = new LocationIntent();
+            context.sendBroadcast(locationIntent);
         }
 
         if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
@@ -50,9 +59,9 @@ public class WifiConnectivityReceiver extends BroadcastReceiver {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                 boolean autoConnect = prefs.getBoolean("autoConnect", false);
 
-                Log.d("WifiConnectivityReceiver", "triggering WifiConnectivityService with autoConnect=" + autoConnect);
+                Log.d(TAG, "triggering WifiConnectivityService with autoConnect=" + autoConnect);
                 
-                int command = autoConnect ? WifiConnectivityService.COMMAND_UNLOCK_CONNECTION
+                int command = autoConnect ? WifiConnectivityService.COMMAND_AUTO_UNLOCK_CONNECTION
                         : WifiConnectivityService.COMMAND_CHECK_CONNECTION;
                 Intent msgIntent = new Intent(context, WifiConnectivityService.class);
                 msgIntent.putExtra(WifiConnectivityService.INTENT_COMMAND, command);
@@ -61,6 +70,28 @@ public class WifiConnectivityReceiver extends BroadcastReceiver {
 
         }
 
+    }
+    
+    private Location lookupLocation() {
+        Location location = null;
+        List<ScanResult> results = wifiManager.getScanResults();
+        if (results != null) {
+            ScanResult strongest = null;
+            for (ScanResult scanResult : results) {
+                // just check if data is in our location database
+                if (LocationData.getLocation(scanResult.BSSID) != null) {
+                    if (strongest == null || strongest.level < scanResult.level) {
+                        strongest = scanResult;
+                    }
+                }
+            }
+
+            if (strongest != null) {
+                location = LocationData.getLocation(strongest.BSSID);
+            }
+        }
+        
+        return location;
     }
 
 }
