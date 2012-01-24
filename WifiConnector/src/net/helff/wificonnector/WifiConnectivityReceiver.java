@@ -36,62 +36,80 @@ import android.util.Log;
 
 public class WifiConnectivityReceiver extends BroadcastReceiver {
 
-    public static final String TAG = "WifiConnectivityReceiver";
-    
-    private WifiManager wifiManager = null;
-    
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Log.i(TAG, "action: " + intent.getAction());
+	public static final String TAG = "WifiConnectivityReceiver";
 
-        if (intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
-            if(wifiManager == null) {
-                wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-            }
-            Intent locationIntent = new LocationIntent();
-            context.sendBroadcast(locationIntent);
-        }
+	private WifiManager wifiManager = null;
 
-        if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		Log.i(TAG, "action: " + intent.getAction());
 
-            NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
-            if (networkInfo != null && networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                boolean autoConnect = prefs.getBoolean("autoConnect", false);
+		if (intent.getAction()
+				.equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
+			if (wifiManager == null) {
+				wifiManager = (WifiManager) context
+						.getSystemService(Context.WIFI_SERVICE);
+			}
+			Intent locationIntent = new LocationIntent();
+			context.sendBroadcast(locationIntent);
+		}
 
-                Log.d(TAG, "triggering WifiConnectivityService with autoConnect=" + autoConnect);
-                
-                int command = autoConnect ? WifiConnectivityService.COMMAND_AUTO_UNLOCK_CONNECTION
-                        : WifiConnectivityService.COMMAND_CHECK_CONNECTION;
-                Intent msgIntent = new Intent(context, WifiConnectivityService.class);
-                msgIntent.putExtra(WifiConnectivityService.INTENT_COMMAND, command);
-                context.startService(msgIntent);
-            }
+		if (intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
 
-        }
+			NetworkInfo networkInfo = (NetworkInfo) intent
+					.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
+			if (networkInfo != null && networkInfo.isConnected()
+					&& networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+				SharedPreferences prefs = PreferenceManager
+						.getDefaultSharedPreferences(context);
+				boolean autoConnect = prefs.getBoolean("autoConnect", false);
 
-    }
-    
-    private Location lookupLocation() {
-        Location location = null;
-        List<ScanResult> results = wifiManager.getScanResults();
-        if (results != null) {
-            ScanResult strongest = null;
-            for (ScanResult scanResult : results) {
-                // just check if data is in our location database
-                if (LocationData.getLocation(scanResult.BSSID) != null) {
-                    if (strongest == null || strongest.level < scanResult.level) {
-                        strongest = scanResult;
-                    }
-                }
-            }
+				Log.d(TAG,
+						"triggering WifiConnectivityService with autoConnect="
+								+ autoConnect);
 
-            if (strongest != null) {
-                location = LocationData.getLocation(strongest.BSSID);
-            }
-        }
-        
-        return location;
-    }
+				int command = autoConnect ? WifiConnectivityService.COMMAND_AUTO_UNLOCK_CONNECTION
+						: WifiConnectivityService.COMMAND_CHECK_CONNECTION;
+				Intent msgIntent = new Intent(context,
+						WifiConnectivityService.class);
+				msgIntent.putExtra(WifiConnectivityService.INTENT_COMMAND,
+						command);
+				context.startService(msgIntent);
+			}
+
+		}
+		if (intent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
+			Log.d(TAG, "triggering WifiConnectivityService state changed");
+
+			Intent msgIntent = new Intent(context,
+					WifiConnectivityService.class);
+			msgIntent.putExtra(WifiConnectivityService.INTENT_COMMAND,
+					WifiConnectivityService.COMMAND_REFRESH_STATUS);
+			context.startService(msgIntent);
+		}
+
+	}
+
+	private Location lookupLocation() {
+		Location location = null;
+		List<ScanResult> results = wifiManager.getScanResults();
+		if (results != null) {
+			ScanResult strongest = null;
+			for (ScanResult scanResult : results) {
+				// just check if data is in our location database
+				if (LocationData.getLocation(scanResult.BSSID) != null) {
+					if (strongest == null || strongest.level < scanResult.level) {
+						strongest = scanResult;
+					}
+				}
+			}
+
+			if (strongest != null) {
+				location = LocationData.getLocation(strongest.BSSID);
+			}
+		}
+
+		return location;
+	}
 
 }

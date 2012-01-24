@@ -115,9 +115,6 @@ public class WifiConnectivityService extends IntentService {
 
         case COMMAND_SEND_STATUS:
         case COMMAND_REFRESH_STATUS:
-            sendStatusIntent();
-            break;
-
         case COMMAND_CHECK_CONNECTION:
             try {
                 // check if network is already unlocked
@@ -193,23 +190,27 @@ public class WifiConnectivityService extends IntentService {
         Log.i("WifiConnectivityService", detailStatus);
 
         sendStatusIntent();
+        
         if(notify) {
             sendNotification(detail);
         }
     }
 
     protected void sendNotification(String msg) {
+    	Log.i(TAG, "send notification: " + msg);
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Notification notification = new Notification(/* your notification */);
+        
+        Notification notification = new Notification(R.drawable.launchericon, msg, System.currentTimeMillis());
                     
         Intent intent = new Intent(this, WifiConnectorActivity.class); 
         intent.setAction("android.intent.action.MAIN"); 
         intent.addCategory("android.intent.category.LAUNCHER"); 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, 
-        intent, 0);
+        intent, PendingIntent.FLAG_CANCEL_CURRENT);
         
         notification.setLatestEventInfo(this.getApplicationContext(), "WifiConnector", msg, pendingIntent);
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
         notificationManager.notify(1, notification);
     
     }

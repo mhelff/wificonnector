@@ -81,7 +81,7 @@ public class WifiConnectorActivity extends Activity {
 
         });
 
-        final ImageButton bPos = (ImageButton) this.findViewById(R.id.buttonPositionRefresh);
+     /*   final ImageButton bPos = (ImageButton) this.findViewById(R.id.buttonPositionRefresh);
         bPos.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
@@ -90,9 +90,9 @@ public class WifiConnectorActivity extends Activity {
             }
 
         });
-
+*/
         statusImage = (ImageView) this.findViewById(R.id.statusImage);
-        positionView = (TextView) this.findViewById(R.id.position);
+  //      positionView = (TextView) this.findViewById(R.id.position);
         
         updateConnectButton(status);
     }
@@ -220,7 +220,7 @@ public class WifiConnectorActivity extends Activity {
     }
 
     public void updatePositionView() {
-        String posText = "Unknown position";
+     /*   String posText = "Unknown position";
 
         List<ScanResult> results = wifiManager.getScanResults();
         if (results != null) {
@@ -245,7 +245,7 @@ public class WifiConnectorActivity extends Activity {
 
         positionView.setText(posText);
         final ImageButton bPos = (ImageButton) this.findViewById(R.id.buttonPositionRefresh);
-        bPos.setEnabled(true);
+        bPos.setEnabled(true); */
     }
     
     private void updateConnectButton(int status) {
