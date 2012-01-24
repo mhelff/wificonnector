@@ -20,9 +20,6 @@
 
 package net.helff.wificonnector;
 
-import java.util.List;
-
-import net.helff.wificonnector.LocationData.Location;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -30,7 +27,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,7 +34,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -53,7 +48,7 @@ public class WifiConnectorActivity extends Activity {
 
     private ImageView connectButton;
     private ImageView statusImage;
-    private TextView positionView;
+    //private TextView positionView;
 
     private WifiManager wifiManager;
 
@@ -186,11 +181,10 @@ public class WifiConnectorActivity extends Activity {
         case Menu.FIRST + 1:
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-            alert.setTitle("About");
-            alert.setMessage("WifiConnector\nCopyright (C) 2012 Martin Helff\nThis software is distributed under "
-                    + "the terms of the GNU General Public License v3\nhttps://github.com/mhelff/wificonnector/");
+            alert.setTitle(R.string.about);
+            alert.setMessage(R.string.about_detail);
 
-            alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            alert.setPositiveButton(R.string.about_ok, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     // nothing
                 }
