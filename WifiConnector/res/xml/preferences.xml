@@ -11,7 +11,7 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="autoConnect"
-            android:summary="@string/settings_autoconnect_detail"
+            android:summary="@string/settings_autoconnect"
             android:title="@string/settings_autoconnect_detail" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -93,6 +93,7 @@ public class WifiConnectivityService extends IntentService {
         super.onCreate();
         mainStatus = getString(R.string.not_connected);
         detailStatus = getString(R.string.not_connected_detail);
+        
         // Get the xml/preferences.xml preferences
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         // autoConnect = prefs.getBoolean("autoConnect", false);
