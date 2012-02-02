@@ -9,7 +9,7 @@
     <string name="info">Info</string>
     <string name="position_headline">Deine Position:</string>
     <string name="position_default">Unbekannt</string>
-    <string name="intro">Wilkommen bei WifiConnector.\nDiese App schaltet automatisch Deinen Gast-Zugang im TelefonicaPublic-WiFi frei.</string>
+    <string name="intro">Diese App schaltet Deinen Gast-Zugang im TelefonicaPublic-WiFi frei.</string>
 
     <string name="error_check_network">Error checking network status</string>
     

@@ -11,17 +11,28 @@
 
         <LinearLayout
             android:id="@+id/linearLayout3"
-            android:layout_width="10dp"
-            android:layout_height="fill_parent" >
-        </LinearLayout>
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="10dp" >
 
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:text="@string/intro"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/launchericon" />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                
+                android:text="@string/intro"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -36,6 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:src="@drawable/wifi_off" />
 
@@ -50,24 +62,26 @@
 
         <LinearLayout
             android:id="@+id/linearLayout5"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/statusImage"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/largeStatus"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/telefonicaPublic"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
                 android:id="@+id/smallStatus"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:singleLine="false"
                 android:text="Small Text"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
+
         </LinearLayout>
 
         <ImageButton
@@ -78,12 +92,6 @@
             android:layout_centerVertical="true"
             android:src="@drawable/connect" />
     </RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout4"
-        android:layout_width="fill_parent"
-        android:layout_height="10dp" >
-    </LinearLayout>
 <!-- 
     <RelativeLayout
         android:id="@+id/relativeLayout1"
