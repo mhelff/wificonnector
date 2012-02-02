@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">WifiConnector</string>
+    <string name="connect">Verbinden</string>
+    <string name="disconnect">Abmelden</string>
+    <string name="settings">Einstellungen</string>
+    <string name="telefonicaPublic">TelefonicaPublic</string>
+    <string name="info">Info</string>
+    <string name="position_headline">Deine Position:</string>
+    <string name="position_default">Unbekannt</string>
+    <string name="intro">Wilkommen bei WifiConnector.\nDiese App schaltet automatisch Deinen Gast-Zugang im TelefonicaPublic-WiFi frei.</string>
+
+    <string name="error_check_network">Error checking network status</string>
+    
+    <string name="phone_not_set">Telefon-Nummer nicht eingegeben</string>
+    <string name="check_settings">Bitte überprüfen Sie die Einstellungen</string>
+    <string name="not_connected">Nicht verbunden</string>
+    <string name="not_connected_detail">Nicht verbunden mit TelefonicaPublic</string>
+    
+    <string name="wifi_ready">TelefonicaPublic bereit</string>
+    <string name="wifi_locked">TelefonicaPublic gesperrt</string>
+    <string name="wifi_ready_detail">Internet-Zugang ist entsperrt</string>
+    <string name="wifi_locked_detail">Drücke auf "Verbinden"</string>
+    
+    <string name="wifi_submit_msisdn">Entsperre Internet-Zugang</string>
+    <string name="wifi_submit_msisdn_detail">"Übermittle Telefonnummer %s"</string>
+    <string name="wifi_submitted_msisdn_detail">"Telefonnummer %s wurde übermittelt"</string>
+    <string name="wifi_submit_msisdn_error">Konnte Telefonnummer nicht übermitteln</string>
+    <string name="wifi_submit_msisdn_not_reg">Telefonnummer ist nicht registriert</string>
+    
+    <string name="wifi_wait_token">Warte auf Zugangscode</string>
+    <string name="wifi_received_token">Zugangscode erhalten: %s</string>
+    <string name="wifi_no_token">Zugangscode wurde nicht empfangen, bitte wiederholen!</string>
+    <string name="wifi_submit_token">Übermittle Zugangscode: %s</string>
+    <string name="wifi_submitted_token">Zugangscode: %s wurde übermittelt</string>
+    <string name="wifi_token_error">Konnte Zugangscode nicht übermitteln, bitte wiederholen!</string>
+    
+    <string name="wifi_disconnect">Melde ab</string>
+    <string name="wifi_disconnect_detail">Abmeldung vom Internet-Zugang über Telefonica WiFi</string>
+    <string name="wifi_disconnect_error">Abmeldung nicht erfolgreich, bitte wiederholen</string>
+    
+    <string name="settings_msisdn">Telefonnummer</string>
+    <string name="settings_msisdn_detail">Deine Mobil-Telefonnummer im Format +491791234567</string>
+    <string name="settings_autoconnect">Automatische Verbindung</string>
+    <string name="settings_autoconnect_detail">Stelle Verbindung zu TelefonicaPublic automatisch her</string>
+    <string name="settings_smsdelay">Wartezeit für Zugangscode</string>
+    <string name="settings_smsdelay_detail">Wie lange soll auf die SMS mit dem Zugangscode gewartet werden</string>
+    
+    <string name="about">Über</string>
+    <string name="about_ok">OK</string>
+    <string name="about_detail">WifiConnector\nCopyright &#169; 2012 Martin Helff\nThis software is distributed under the terms of the GNU General Public License v3\nhttps://github.com/mhelff/wificonnector/</string>
+    
+</resources>

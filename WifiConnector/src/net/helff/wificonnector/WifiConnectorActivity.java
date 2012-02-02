@@ -35,6 +35,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /**
@@ -49,6 +50,7 @@ public class WifiConnectorActivity extends Activity {
     private ImageView connectButton;
     private ImageView statusImage;
     //private TextView positionView;
+    private ProgressBar connectionProgress;
 
     private WifiManager wifiManager;
 
@@ -88,6 +90,7 @@ public class WifiConnectorActivity extends Activity {
 */
         statusImage = (ImageView) this.findViewById(R.id.statusImage);
   //      positionView = (TextView) this.findViewById(R.id.position);
+        connectionProgress = (ProgressBar) this.findViewById(R.id.connectionProgress);
         
         updateConnectButton(status);
     }
@@ -248,19 +251,31 @@ public class WifiConnectorActivity extends Activity {
         case WifiConnectivityService.STATUS_LOCKED:
             connectButton.setEnabled(true);
             connectButton.setImageResource(R.drawable.connect);
-            statusImage.setImageResource(R.drawable.btn_check_on_disabled_holo_light);
+            statusImage.setImageResource(R.drawable.wifi_off);
+            connectButton.setVisibility(View.VISIBLE);
+            statusImage.setVisibility(View.VISIBLE);
+            connectionProgress.setVisibility(View.GONE);
             break;
 
         case WifiConnectivityService.STATUS_UNLOCKED:
             connectButton.setEnabled(true);
             connectButton.setImageResource(R.drawable.disconnect);
-            statusImage.setImageResource(R.drawable.btn_check_on_focused_holo_dark);
+            statusImage.setImageResource(R.drawable.wifi_on);
+            connectButton.setVisibility(View.VISIBLE);
+            statusImage.setVisibility(View.VISIBLE);
+            connectionProgress.setVisibility(View.GONE);
+            break;
+
+        case WifiConnectivityService.STATUS_WORKING:
+            connectButton.setVisibility(View.GONE);
+            statusImage.setVisibility(View.INVISIBLE);
+            connectionProgress.setVisibility(View.VISIBLE);
             break;
 
         default:
             connectButton.setEnabled(false);
             connectButton.setImageResource(R.drawable.connect);
-            statusImage.setImageResource(R.drawable.btn_check_on_disabled_holo_dark);
+            statusImage.setImageResource(R.drawable.wifi_off);
             break;
         }
     }

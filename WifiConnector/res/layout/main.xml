@@ -36,7 +36,17 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/btn_check_on_disabled_holo_dark" />
+            android:layout_marginRight="5dp"
+            android:src="@drawable/wifi_off" />
+
+        <ProgressBar
+            android:id="@+id/connectionProgress"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/linearLayout5"
@@ -67,7 +77,6 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:src="@drawable/connect" />
-
     </RelativeLayout>
 
     <LinearLayout
@@ -120,4 +129,5 @@
 
     </RelativeLayout>
 -->
+
 </LinearLayout>

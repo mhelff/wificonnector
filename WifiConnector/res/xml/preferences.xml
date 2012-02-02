@@ -8,10 +8,20 @@
             android:key="mobileNumber"
             android:summary="@string/settings_msisdn_detail"
             android:title="@string/settings_msisdn" />
+
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="autoConnect"
             android:summary="@string/settings_autoconnect_detail"
             android:title="@string/settings_autoconnect" />
+
+        <ListPreference
+            android:defaultValue="15"
+            android:entries="@array/smsDelay"
+            android:entryValues="@array/smsDelayValues"
+            android:key="smsDelay"
+            android:summary="@string/settings_smsdelay_detail"
+            android:title="@string/settings_smsdelay" />
     </PreferenceCategory>
+
 </PreferenceScreen>

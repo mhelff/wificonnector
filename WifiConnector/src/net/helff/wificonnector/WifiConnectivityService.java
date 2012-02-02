@@ -67,7 +67,7 @@ public class WifiConnectivityService extends IntentService {
     public static final int STATUS_CONFIG_ERROR = -1;
     public static final int STATUS_NOT_CONNECTED = 0;
     public static final int STATUS_LOCKED = 1;
-    public static final int STATUS_UNLOCKING = 2;
+    public static final int STATUS_WORKING = 2;
     public static final int STATUS_UNLOCKED = 3;
 
     private String mainStatus;
@@ -75,6 +75,7 @@ public class WifiConnectivityService extends IntentService {
     private int statusCode;
 
     private String mobileNumber;
+    private int smsDelay;
 
     private HttpClient httpClient;
     private HttpContext localContext;
@@ -96,8 +97,8 @@ public class WifiConnectivityService extends IntentService {
         
         // Get the xml/preferences.xml preferences
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        // autoConnect = prefs.getBoolean("autoConnect", false);
         mobileNumber = prefs.getString("mobileNumber", "");
+        smsDelay = Integer.parseInt(prefs.getString("smsDelay", "15"));
 
         httpClient = new DefaultHttpClient();
         localContext = new BasicHttpContext();
@@ -297,7 +298,7 @@ public class WifiConnectivityService extends IntentService {
         try {
             // post mobile-number to login page
             publishProgress(getString(R.string.wifi_submit_msisdn),
-                    getString(R.string.wifi_submit_msisdn_detail, msisdn), STATUS_UNLOCKING, true);
+                    getString(R.string.wifi_submit_msisdn_detail, msisdn), STATUS_WORKING, true);
             HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/login.php?l=de");
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair("handynr", msisdn));
@@ -308,7 +309,7 @@ public class WifiConnectivityService extends IntentService {
             // TODO: check response for success or "not registered"
             response.getEntity().consumeContent();
             publishProgress(getString(R.string.wifi_submit_msisdn),
-                    getString(R.string.wifi_submitted_msisdn_detail, msisdn), STATUS_UNLOCKING);
+                    getString(R.string.wifi_submitted_msisdn_detail, msisdn), STATUS_WORKING);
         } catch (ClientProtocolException e) {
             // TODO: this is not "not registered"...
             publishProgress(getString(R.string.wifi_submit_msisdn), getString(R.string.wifi_submit_msisdn_not_reg),
@@ -326,7 +327,7 @@ public class WifiConnectivityService extends IntentService {
         LoginToken loginToken = new LoginToken();
 
         // set up broadcast receiver
-        publishProgress(getString(R.string.wifi_submit_msisdn), getString(R.string.wifi_wait_token), STATUS_UNLOCKING,
+        publishProgress(getString(R.string.wifi_submit_msisdn), getString(R.string.wifi_wait_token), STATUS_WORKING,
                 true);
         SMSReceiver receiver = new SMSReceiver(loginToken);
         IntentFilter intentFilter = new IntentFilter(SMSReceiver.ACTION);
@@ -334,8 +335,8 @@ public class WifiConnectivityService extends IntentService {
         registerReceiver(receiver, intentFilter);
 
         int iterations = 1;
-        // loop for 15 seconds and wait for SMS arriving
-        while (iterations < 30 && !loginToken.isTokenSet()) {
+        // loop every 500ms and wait for SMS arriving
+        while (iterations < (smsDelay*2) && !loginToken.isTokenSet()) {
 
             // just wait, therefore sleep a half second
             try {
@@ -353,7 +354,7 @@ public class WifiConnectivityService extends IntentService {
 
         if (loginToken.isTokenSet()) {
             publishProgress(getString(R.string.wifi_submit_msisdn),
-                    getString(R.string.wifi_received_token, loginToken.getToken()), STATUS_UNLOCKING);
+                    getString(R.string.wifi_received_token, loginToken.getToken()), STATUS_WORKING);
         } else {
             publishProgress(getString(R.string.wifi_submit_msisdn), getString(R.string.wifi_no_token), STATUS_LOCKED,
                     true);
@@ -368,7 +369,7 @@ public class WifiConnectivityService extends IntentService {
         try {
             // post mobile-number to login page
             publishProgress(getString(R.string.wifi_submit_msisdn),
-                    getString(R.string.wifi_submit_token, loginToken.getToken()), STATUS_UNLOCKING, true);
+                    getString(R.string.wifi_submit_token, loginToken.getToken()), STATUS_WORKING, true);
             HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/token.php?l=de");
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair("token", loginToken.getToken()));
@@ -379,7 +380,7 @@ public class WifiConnectivityService extends IntentService {
             HttpResponse response = httpClient.execute(httpPost, localContext);
             response.getEntity().consumeContent();
             publishProgress(getString(R.string.wifi_submit_msisdn),
-                    getString(R.string.wifi_submitted_token, loginToken.getToken()), STATUS_UNLOCKING);
+                    getString(R.string.wifi_submitted_token, loginToken.getToken()), STATUS_WORKING);
         } catch (ClientProtocolException e) {
             publishProgress(getString(R.string.wifi_submit_msisdn), getString(R.string.wifi_token_error),
                     STATUS_LOCKED, true);
@@ -394,7 +395,7 @@ public class WifiConnectivityService extends IntentService {
     protected void logout(HttpClient httpClient) throws ConnectionWorkflowException {
         try {
             publishProgress(getString(R.string.wifi_disconnect), getString(R.string.wifi_disconnect_detail),
-                    STATUS_UNLOCKING);
+                    STATUS_WORKING);
             // post mobile-number to login page
             HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/index.php?l=de");
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
