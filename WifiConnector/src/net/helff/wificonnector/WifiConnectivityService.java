@@ -76,6 +76,7 @@ public class WifiConnectivityService extends IntentService {
 
     private String mobileNumber;
     private int smsDelay;
+    private int smsPriority;
 
     private HttpClient httpClient;
     private HttpContext localContext;
@@ -99,6 +100,7 @@ public class WifiConnectivityService extends IntentService {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         mobileNumber = prefs.getString("mobileNumber", "");
         smsDelay = Integer.parseInt(prefs.getString("smsDelay", "15"));
+        smsPriority = Integer.parseInt(prefs.getString("smsPriority", "100"));
 
         httpClient = new DefaultHttpClient();
         localContext = new BasicHttpContext();
@@ -331,7 +333,7 @@ public class WifiConnectivityService extends IntentService {
                 true);
         SMSReceiver receiver = new SMSReceiver(loginToken);
         IntentFilter intentFilter = new IntentFilter(SMSReceiver.ACTION);
-        intentFilter.setPriority(100);
+        intentFilter.setPriority(smsPriority);
         registerReceiver(receiver, intentFilter);
 
         int iterations = 1;

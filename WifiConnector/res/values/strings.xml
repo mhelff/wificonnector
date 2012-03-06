@@ -46,9 +46,15 @@
     <string name="settings_autoconnect_detail">Connect to TelefonicaPublic automatically</string>
     <string name="settings_smsdelay">Wait for login token</string>
     <string name="settings_smsdelay_detail">How long should we wait for the login token SMS</string>
+    <string name="settings_prio">Priority when receiving SMS</string>
+    <string name="settings_prio_detail">Don\'t change unless you installed alternative SMS apps which stops WifiConnector working!</string>
     
     <string name="about">About</string>
     <string name="about_ok">OK</string>
     <string name="about_detail">WifiConnector\nCopyright &#169; 2012 Martin Helff\nThis software is distributed under the terms of the GNU General Public License v3\nhttps://github.com/mhelff/wificonnector/</string>
+
+    <string name="signup_text">Since this app is not available in the Android Market, you might be interested to receive new versions by eMail. Just click on the sign up button below and send me a email to stay up to date!</string>
+    <string name="signup_button">Sign-Up now!</string>
+    <string name="send">Send</string>
     
 </resources>

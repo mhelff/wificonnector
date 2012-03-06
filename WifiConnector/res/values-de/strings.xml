@@ -46,9 +46,14 @@
     <string name="settings_autoconnect_detail">Stelle Verbindung zu TelefonicaPublic automatisch her</string>
     <string name="settings_smsdelay">Wartezeit für Zugangscode</string>
     <string name="settings_smsdelay_detail">Wie lange soll auf die SMS mit dem Zugangscode gewartet werden</string>
+    <string name="settings_prio">Priorität für den SMS-Empfang</string>
+    <string name="settings_prio_detail">Bitte nicht ändern solange keine alternativen SMS Apps installiert sind, die verhindern das WifiConnector die SMS mit dem Zugangscode erhält!</string>
     
     <string name="about">Über</string>
     <string name="about_ok">OK</string>
     <string name="about_detail">WifiConnector\nCopyright &#169; 2012 Martin Helff\nThis software is distributed under the terms of the GNU General Public License v3\nhttps://github.com/mhelff/wificonnector/</string>
     
+    <string name="signup_text">Diese App ist nicht im Android Market erhältlich. Wenn Du über neue Versionen informiert werden möchtest, nutze den Button unten und sende mir eine eMail!</string>
+    <string name="signup_button">Jetzt registrieren!</string>
+    <string name="send">Senden</string>
 </resources>

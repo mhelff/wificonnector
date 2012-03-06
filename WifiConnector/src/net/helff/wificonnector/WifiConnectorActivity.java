@@ -34,6 +34,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -74,6 +75,19 @@ public class WifiConnectorActivity extends Activity {
             public void onClick(View v) {
                 connectButton.setEnabled(false);
                 flipConnection();
+            }
+
+        });
+        
+        Button signupButton = (Button) findViewById(R.id.signupButton);
+        signupButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                final Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent.setType("plain/text");
+                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"martin@helff.net"});
+                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "WifiConnector signup");
+                emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Please send me the latest news and versions of WifiConnector.");
+                startActivity(Intent.createChooser(emailIntent, getString(R.string.send)));
             }
 
         });
