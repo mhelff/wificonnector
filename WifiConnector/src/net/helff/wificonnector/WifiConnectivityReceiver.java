@@ -54,6 +54,11 @@ public class WifiConnectivityReceiver extends BroadcastReceiver {
 
 			NetworkInfo networkInfo = (NetworkInfo) intent
 					.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
+			
+			Log.d(TAG,
+                    "got network_state_changed with detailed info: " 
+                            + networkInfo == null ? "nothing" : networkInfo.getDetailedState().name());
+			
 			if (networkInfo != null && networkInfo.isConnected()
 					&& networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
 				SharedPreferences prefs = PreferenceManager
