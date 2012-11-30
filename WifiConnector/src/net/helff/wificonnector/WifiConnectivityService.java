@@ -33,6 +33,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
@@ -69,6 +70,8 @@ public class WifiConnectivityService extends IntentService {
     public static final int STATUS_LOCKED = 1;
     public static final int STATUS_WORKING = 2;
     public static final int STATUS_UNLOCKED = 3;
+    
+    public static final String TELEFONICA_SSID = "TelefonicaPublic";
 
     private String mainStatus;
     private String detailStatus;
@@ -103,6 +106,7 @@ public class WifiConnectivityService extends IntentService {
         smsPriority = Integer.parseInt(prefs.getString("smsPriority", "100"));
 
         httpClient = new DefaultHttpClient();
+        httpClient.getParams().setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);
         localContext = new BasicHttpContext();
         wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
     }
@@ -242,7 +246,7 @@ public class WifiConnectivityService extends IntentService {
 
     protected void checkWifi() throws ConnectionWorkflowException {
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        if (wifiInfo == null || !"TelefonicaPublic".equals(wifiInfo.getSSID())) {
+        if (!TELEFONICA_SSID.equals(this.normalizeSSID(wifiInfo))) {
             // post error
             publishProgress(getString(R.string.not_connected), getString(R.string.not_connected_detail),
                     STATUS_NOT_CONNECTED);
@@ -415,5 +419,24 @@ public class WifiConnectivityService extends IntentService {
             publishProgress("Logging off", getString(R.string.wifi_disconnect_error), STATUS_UNLOCKED);
             throw new ConnectionWorkflowException("Error locking session ", e);
         }
+    }
+    
+    /**
+     * Used to cut of quotes in the SSID. This is a broken behavior of Android 4.2
+     * 
+     * @param wi the WifiInfo
+     * @return The SSID of the network without quotes or an empty string
+     */
+    protected String normalizeSSID(WifiInfo wi) {
+    	String ssid = "";
+    	
+    	if(wi != null) {
+    		ssid = wi.getSSID();
+    		if(ssid.startsWith("\"") && ssid.endsWith("\"")) {
+    			ssid = ssid.substring(1, ssid.length()-1);
+    		}
+    	}
+    	
+    	return ssid;
     }
 }
