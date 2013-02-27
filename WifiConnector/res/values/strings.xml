@@ -44,6 +44,8 @@
     <string name="settings_msisdn_detail">Your mobile number in the format +491791234567</string>
     <string name="settings_autoconnect">Automatic connection</string>
     <string name="settings_autoconnect_detail">Connect to TelefonicaPublic automatically</string>
+    <string name="settings_autoclearnotification">Don\'t keep notifications</string>
+    <string name="settings_autoclearnotification_detail">Remove success notifications automatically</string>
     <string name="settings_smsdelay">Wait for login token</string>
     <string name="settings_smsdelay_detail">How long should we wait for the login token SMS</string>
     <string name="settings_prio">Priority when receiving SMS</string>

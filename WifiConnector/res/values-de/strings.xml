@@ -44,6 +44,8 @@
     <string name="settings_msisdn_detail">Deine Mobil-Telefonnummer im Format +491791234567</string>
     <string name="settings_autoconnect">Automatische Verbindung</string>
     <string name="settings_autoconnect_detail">Stelle Verbindung zu TelefonicaPublic automatisch her</string>
+    <string name="settings_autoclearnotification">Lösche Benachrichtigungen</string>
+    <string name="settings_autoclearnotification_detail">Entferne Erfolgs-Benachrichtigungen automatisch</string>
     <string name="settings_smsdelay">Wartezeit für Zugangscode</string>
     <string name="settings_smsdelay_detail">Wie lange soll auf die SMS mit dem Zugangscode gewartet werden</string>
     <string name="settings_prio">Priorität für den SMS-Empfang</string>

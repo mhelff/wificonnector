@@ -20,6 +20,9 @@
 
 package net.helff.wificonnector;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -28,31 +31,46 @@ import android.telephony.SmsMessage;
 
 public class SMSReceiver extends BroadcastReceiver {
 
-    public static final String ACTION = "android.provider.Telephony.SMS_RECEIVED";
-    private static final String TOKEN_MSG_START = "Ihr Telefonica WLAN Token lautet: ";
-    
-    private LoginToken token;
-    
-    public SMSReceiver(LoginToken t) {
-        token = t;
-    }
-    
-    public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals(ACTION)) {
-            Bundle bundle = intent.getExtras();
-            
-            Object messages[] = (Object[]) bundle.get("pdus");
-            for (int n = 0; n < messages.length; n++) {
-                SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) messages[n]);
-                // TODO: check from address
-                // now parse message and try to set token
-                String msg = smsMessage.getMessageBody();
-                if(msg != null && msg.startsWith(TOKEN_MSG_START)) {
-                    token.setToken(msg.substring(TOKEN_MSG_START.length()));
-                    this.abortBroadcast();
-                }
-                
-            }
-        }
-    }
+	public static final String ACTION = "android.provider.Telephony.SMS_RECEIVED";
+	private static final String TOKEN_MSG_START = "Bitte verwenden sie ";
+	private static final Pattern TOKEN_MSG_REGEX = Pattern
+			.compile("Bitte verwenden sie ([A-Z,a-z,0-9]+) als Ihren Telefonica WLAN Token.");
+	private LoginToken token;
+
+	public SMSReceiver(LoginToken t) {
+		token = t;
+	}
+
+	public void onReceive(Context context, Intent intent) {
+		if (intent.getAction().equals(ACTION)) {
+			Bundle bundle = intent.getExtras();
+
+			Object messages[] = (Object[]) bundle.get("pdus");
+			for (int n = 0; n < messages.length; n++) {
+				SmsMessage smsMessage = SmsMessage
+						.createFromPdu((byte[]) messages[n]);
+				// TODO: check from address
+				// now parse message and try to set token
+				String msg = smsMessage.getMessageBody();
+				String tokenStr = extractToken(msg);
+				if (tokenStr != null) {
+					token.setToken(tokenStr);
+					this.abortBroadcast();
+				}
+			}
+		}
+	}
+
+	public String extractToken(String msg) {
+		if (msg != null) {
+			Matcher m = TOKEN_MSG_REGEX.matcher(msg);
+			if (m.matches() && m.groupCount() == 1) {
+				String splitString = m.group(1);
+				if (splitString != null) {
+					return splitString;
+				}
+			}
+		}
+		return null;
+	}
 }

@@ -30,6 +30,13 @@
             android:key="smsPriority"
             android:summary="@string/settings_prio_detail"
             android:title="@string/settings_prio" />
+        
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="autoClearNotification"
+            android:summary="@string/settings_autoclearnotification_detail"
+            android:title="@string/settings_autoclearnotification" />
+        
     </PreferenceCategory>
 
 </PreferenceScreen>
