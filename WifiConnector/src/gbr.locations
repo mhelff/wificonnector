@@ -3,47 +3,47 @@
    {"id":"00:19:a9:cc:f7:d0","type":1,"floor":0,"block":"A","position":"Mitte / Empfang","building":"GBR"},
    {"id":"00:19:a9:cc:f5:10","type":1,"floor":0,"block":"A","position":"Ost","building":"GBR"},
    {"id":"00:19:a9:cc:f8:50","type":1,"floor":0,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f9:30","type":1,"floor":0,"block":"C","position":"S웓 / Poststelle","building":"GBR"},
+   {"id":"00:19:a9:cc:f9:30","type":1,"floor":0,"block":"C","position":"S체d / Poststelle","building":"GBR"},
    {"id":"00:1a:30:bb:ed:c0","type":1,"floor":0,"block":"D","position":"Nord / Meet \u0026 Eat","building":"GBR"},
    {"id":"00:0f:90:f9:ad:00","type":1,"floor":0,"block":"E","position":"Nord","building":"GBR"},
    
    {"id":"00:19:a9:ce:01:30","type":1,"floor":1,"block":"A","position":"West","building":"GBR"},
    {"id":"00:11:92:f8:9f:40","type":1,"floor":1,"block":"A","position":"Ost","building":"GBR"},
    {"id":"00:19:a9:cc:f7:90","type":1,"floor":1,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:03:80","type":1,"floor":1,"block":"C","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cd:03:80","type":1,"floor":1,"block":"C","position":"S체d","building":"GBR"},
    {"id":"00:0f:90:93:ee:a0","type":1,"floor":1,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:0f:90:94:67:90","type":1,"floor":1,"block":"D","position":"S웓","building":"GBR"},
+   {"id":"00:0f:90:94:67:90","type":1,"floor":1,"block":"D","position":"S체d","building":"GBR"},
    {"id":"00:0f:90:72:3c:80","type":1,"floor":1,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:11:92:f4:21:e0","type":1,"floor":1,"block":"E","position":"S웓","building":"GBR"},
+   {"id":"00:11:92:f4:21:e0","type":1,"floor":1,"block":"E","position":"S체d","building":"GBR"},
       
    {"id":"00:19:a9:cc:fb:60","type":1,"floor":2,"block":"A","position":"West","building":"GBR"},
    {"id":"00:19:a9:cd:ff:20","type":1,"floor":2,"block":"A","position":"Mitte","building":"GBR"},
    {"id":"00:13:1a:96:21:80","type":1,"floor":2,"block":"A","position":"Ost","building":"GBR"},
    {"id":"00:0f:90:f9:d0:10","type":1,"floor":2,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:e2:20","type":1,"floor":2,"block":"D","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cd:e2:20","type":1,"floor":2,"block":"D","position":"S체d","building":"GBR"},
    {"id":"00:13:1a:96:12:f0","type":1,"floor":2,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:12:43:48:10:c0","type":1,"floor":2,"block":"E","position":"S웓","building":"GBR"},
+   {"id":"00:12:43:48:10:c0","type":1,"floor":2,"block":"E","position":"S체d","building":"GBR"},
    
    {"id":"00:19:a9:cd:e9:20","type":1,"floor":3,"block":"A","position":"West","building":"GBR"},
    {"id":"00:19:a9:cd:de:90","type":1,"floor":3,"block":"A","position":"Mitte","building":"GBR"},
    {"id":"00:19:a9:cd:f8:10","type":1,"floor":3,"block":"A","position":"Ost","building":"GBR"},
    {"id":"00:19:a9:cd:0a:c0","type":1,"floor":3,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:f7:00","type":1,"floor":3,"block":"C","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cd:f7:00","type":1,"floor":3,"block":"C","position":"S체d","building":"GBR"},
    {"id":"00:19:a9:cd:03:30","type":1,"floor":3,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:f5:80","type":1,"floor":3,"block":"D","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cd:f5:80","type":1,"floor":3,"block":"D","position":"S체d","building":"GBR"},
    {"id":"00:19:a9:cd:02:40","type":1,"floor":3,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f9:f0","type":1,"floor":3,"block":"E","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cc:f9:f0","type":1,"floor":3,"block":"E","position":"S체d","building":"GBR"},
    
    
    {"id":"00:19:a9:cd:04:60","type":1,"floor":4,"block":"A","position":"West","building":"GBR"},
    {"id":"00:19:a9:ce:00:c0","type":1,"floor":4,"block":"A","position":"Mitte","building":"GBR"},
    {"id":"00:19:a9:cd:e4:e0","type":1,"floor":4,"block":"A","position":"Ost","building":"GBR"},
    {"id":"00:19:a9:cd:15:60","type":1,"floor":4,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f8:c0","type":1,"floor":4,"block":"C","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cc:f8:c0","type":1,"floor":4,"block":"C","position":"S체d","building":"GBR"},
    {"id":"00:19:a9:cd:fa:80","type":1,"floor":4,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f2:30","type":1,"floor":4,"block":"D","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cc:f2:30","type":1,"floor":4,"block":"D","position":"S체d","building":"GBR"},
    {"id":"00:19:a9:cd:fe:e0","type":1,"floor":4,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:01:e0","type":1,"floor":4,"block":"E","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cd:01:e0","type":1,"floor":4,"block":"E","position":"S체d","building":"GBR"},
    
    
    
@@ -55,31 +55,31 @@
    {"id":"00:1d:46:7d:c4:f0","type":1,"floor":5,"block":"C","position":"Nord","building":"GBR"},
    {"id":"00:19:a9:cd:02:70","type":1,"floor":5,"block":"C","position":"Nord","building":"GBR"},
    {"id":"00:19:a9:cd:02:00","type":1,"floor":5,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f4:d0","type":1,"floor":5,"block":"D","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cc:f4:d0","type":1,"floor":5,"block":"D","position":"S체d","building":"GBR"},
    {"id":"00:19:a9:cd:0d:60","type":1,"floor":5,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:07:40","type":1,"floor":5,"block":"E","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cd:07:40","type":1,"floor":5,"block":"E","position":"S체d","building":"GBR"},
    
    
    {"id":"00:19:a9:cc:f3:30","type":1,"floor":6,"block":"A","position":"West","building":"GBR"},
    {"id":"00:0f:90:94:64:c0","type":1,"floor":6,"block":"A","position":"Mitte","building":"GBR"},
    {"id":"00:0f:90:94:64:30","type":1,"floor":6,"block":"A","position":"Ost","building":"GBR"},
    {"id":"00:19:a9:cd:f0:f0","type":1,"floor":6,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:0a:90","type":1,"floor":6,"block":"C","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cd:0a:90","type":1,"floor":6,"block":"C","position":"S체d","building":"GBR"},
    {"id":"00:19:a9:cc:fa:50","type":1,"floor":6,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f7:20","type":1,"floor":6,"block":"D","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cc:f7:20","type":1,"floor":6,"block":"D","position":"S체d","building":"GBR"},
    {"id":"00:19:a9:cc:f5:80","type":1,"floor":6,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f1:f0","type":1,"floor":6,"block":"E","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cc:f1:f0","type":1,"floor":6,"block":"E","position":"S체d","building":"GBR"},
    
    
    {"id":"00:11:5c:1b:a4:f0","type":1,"floor":7,"block":"A","position":"West","building":"GBR"},
    {"id":"00:0f:90:f9:b2:20","type":1,"floor":7,"block":"A","position":"Mitte","building":"GBR"},
    {"id":"00:19:a9:cd:fc:60","type":1,"floor":7,"block":"A","position":"Ost","building":"GBR"},
    {"id":"00:11:21:e0:b9:20","type":1,"floor":7,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:11:21:e0:bc:00","type":1,"floor":7,"block":"C","position":"S웓","building":"GBR"},
+   {"id":"00:11:21:e0:bc:00","type":1,"floor":7,"block":"C","position":"S체d","building":"GBR"},
    {"id":"00:0f:90:93:ef:e0","type":1,"floor":7,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:0f:90:94:65:30","type":1,"floor":7,"block":"D","position":"S웓","building":"GBR"},
+   {"id":"00:0f:90:94:65:30","type":1,"floor":7,"block":"D","position":"S체d","building":"GBR"},
    {"id":"00:19:a9:cc:f7:e0","type":1,"floor":7,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f9:50","type":1,"floor":7,"block":"E","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cc:f9:50","type":1,"floor":7,"block":"E","position":"S체d","building":"GBR"},
    
    
    
@@ -87,10 +87,10 @@
    {"id":"00:1a:30:bb:ea:80","type":1,"floor":8,"block":"A","position":"Mitte","building":"GBR"},
    {"id":"00:19:a9:cd:fc:20","type":1,"floor":8,"block":"A","position":"Ost","building":"GBR"},
    {"id":"00:1a:30:bb:97:80","type":1,"floor":8,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:1a:30:bb:96:50","type":1,"floor":8,"block":"C","position":"S웓","building":"GBR"},
+   {"id":"00:1a:30:bb:96:50","type":1,"floor":8,"block":"C","position":"S체d","building":"GBR"},
    {"id":"00:19:a9:cd:fd:40","type":1,"floor":8,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f6:70","type":1,"floor":8,"block":"D","position":"S웓","building":"GBR"},
+   {"id":"00:19:a9:cc:f6:70","type":1,"floor":8,"block":"D","position":"S체d","building":"GBR"},
    {"id":"00:19:a9:cc:f5:50","type":1,"floor":8,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f2:d0","type":1,"floor":8,"block":"E","position":"S웓","building":"GBR"}
+   {"id":"00:19:a9:cc:f2:d0","type":1,"floor":8,"block":"E","position":"S체d","building":"GBR"}
    
    ]

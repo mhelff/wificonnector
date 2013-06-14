@@ -93,14 +93,14 @@
             android:src="@drawable/connect" />
 
     </RelativeLayout>
-<!-- 
+ 
     <RelativeLayout
-        android:id="@+id/relativeLayout1"
+        android:id="@+id/relativeLayout3"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="64dp" >
 
         <LinearLayout
-            android:id="@+id/LinearLayout01"
+            android:id="@+id/LinearLayoutp1"
             android:layout_width="10dp"
             android:layout_height="fill_parent"
             android:layout_alignParentLeft="true" >
@@ -108,10 +108,10 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/linearLayout6"
+            android:id="@+id/linearLayoutp2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/LinearLayout01"
+            android:layout_toRightOf="@id/LinearLayoutp1"
             android:orientation="vertical" >
 
             <TextView
@@ -137,12 +137,12 @@
             android:src="@drawable/ic_menu_refresh" />
 
     </RelativeLayout>
--->
+
 
     <RelativeLayout
         android:id="@+id/relativeLayout1"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="263dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp" >
 

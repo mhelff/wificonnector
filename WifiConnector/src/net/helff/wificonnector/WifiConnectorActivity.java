@@ -20,6 +20,8 @@
 
 package net.helff.wificonnector;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -27,6 +29,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,6 +38,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -50,7 +54,7 @@ public class WifiConnectorActivity extends Activity {
 
     private ImageView connectButton;
     private ImageView statusImage;
-    //private TextView positionView;
+    private TextView positionView;
     private ProgressBar connectionProgress;
 
     private int status = WifiConnectivityService.STATUS_NOT_CONNECTED;
@@ -88,18 +92,21 @@ public class WifiConnectorActivity extends Activity {
 
         });
 
-     /*   final ImageButton bPos = (ImageButton) this.findViewById(R.id.buttonPositionRefresh);
+        final ImageButton bPos = (ImageButton) this.findViewById(R.id.buttonPositionRefresh);
         bPos.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
                 // just trigger WiFi-Scanning
-                bPos.setEnabled(!wifiManager.startScan());
+            	WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            	if(wifiManager != null) {
+            		bPos.setEnabled(!wifiManager.startScan());
+            	}
             }
 
         });
-*/
+
         statusImage = (ImageView) this.findViewById(R.id.statusImage);
-  //      positionView = (TextView) this.findViewById(R.id.position);
+        positionView = (TextView) this.findViewById(R.id.position);
         connectionProgress = (ProgressBar) this.findViewById(R.id.connectionProgress);
         
         updateConnectButton(status);
@@ -236,9 +243,13 @@ public class WifiConnectorActivity extends Activity {
     }
 
     public void updatePositionView() {
-     /*   String posText = "Unknown position";
+        String posText = "Unknown position";
 
-        List<ScanResult> results = wifiManager.getScanResults();
+        List<ScanResult> results = null;
+        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        if(wifiManager != null) {
+        	results = wifiManager.getScanResults();
+        }
         if (results != null) {
             ScanResult strongest = null;
             for (ScanResult scanResult : results) {
@@ -261,7 +272,7 @@ public class WifiConnectorActivity extends Activity {
 
         positionView.setText(posText);
         final ImageButton bPos = (ImageButton) this.findViewById(R.id.buttonPositionRefresh);
-        bPos.setEnabled(true); */
+        bPos.setEnabled(true);
     }
     
     private void updateConnectButton(int status) {
