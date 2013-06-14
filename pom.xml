@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <version>1.0</version>
+    <groupId>net.helff.wificonnector</groupId>
+    <artifactId>wificonnector-parent</artifactId>
+    <name>WifiConnector Android parent</name>
+    <packaging>pom</packaging>
+
+    <issueManagement>
+        <url>https://github.com/mhelff/wificonnector/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License v3</name>
+            <url></url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/mhelff/wificonnector</url>
+        <connection>scm:git:git://github.com/mhelff/wificonnector.git</connection>
+        <developerConnection>scm:git:git@github.com:mhelff/wificonnector.git</developerConnection>
+    </scm>
+
+    <developers>
+        <developer>
+            <email>martin@helff.net</email>
+            <name>Martin Helff</name>
+            <url>https://github.com/mhelff</url>
+            <id>mhelff</id>
+        </developer>
+    </developers>
+
+    <modules>
+        <module>WifiConnector</module>
+        <module>WifiConnectorTest</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <android.version>4.0.1.2</android.version>
+    </properties>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                    <artifactId>android-maven-plugin</artifactId>
+                    <version>3.6.0</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <sdk>
+                            <platform>17</platform>
+                        </sdk>
+                        <undeployBeforeDeploy>true</undeployBeforeDeploy>
+                        <proguard>
+                            <skip>true</skip>
+                            <config>../proguard.cfg</config>
+                        </proguard>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
