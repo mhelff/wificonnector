@@ -53,8 +53,6 @@ public class WifiConnectorActivity extends Activity {
     //private TextView positionView;
     private ProgressBar connectionProgress;
 
-    private WifiManager wifiManager;
-
     private int status = WifiConnectivityService.STATUS_NOT_CONNECTED;
 
     /** Called when the activity is first created. */
@@ -66,8 +64,6 @@ public class WifiConnectorActivity extends Activity {
             status = savedInstanceState.getInt("connectionStatus", WifiConnectivityService.STATUS_NOT_CONNECTED);
         }
         
-        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
         setContentView(R.layout.main);
         connectButton = (ImageView) this.findViewById(R.id.connectButton);
         connectButton.setOnClickListener(new OnClickListener() {
@@ -127,10 +123,19 @@ public class WifiConnectorActivity extends Activity {
         checkConnection();
 
         // start a wifi scan for position update
-        wifiManager.startScan();
+        startScan();
         // immediately show position from old scan, most times thats quite
         // accurate
         updatePositionView();
+    }
+    
+    private void startScan() {
+    	
+    	WifiManager	wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+    	
+    	if(wifiManager != null && wifiManager.isWifiEnabled()) {
+    		wifiManager.startScan();
+    	}
     }
 
     @Override
@@ -145,7 +150,7 @@ public class WifiConnectorActivity extends Activity {
     public void onResume() {
         startReceiver();
         // trigger update
-        wifiManager.startScan();
+        startScan();
         super.onResume();
     }
 

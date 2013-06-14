@@ -83,7 +83,6 @@ public class WifiConnectivityService extends IntentService {
 
     private HttpClient httpClient;
     private HttpContext localContext;
-    private WifiManager wifiManager;
 
     public WifiConnectivityService() {
         super(WifiConnectivityService.class.getName());
@@ -108,7 +107,6 @@ public class WifiConnectivityService extends IntentService {
         httpClient = new DefaultHttpClient();
         httpClient.getParams().setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);
         localContext = new BasicHttpContext();
-        wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
     }
 
     @Override
@@ -245,7 +243,8 @@ public class WifiConnectivityService extends IntentService {
     }
 
     protected void checkWifi() throws ConnectionWorkflowException {
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+    	WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager != null ? wifiManager.getConnectionInfo() : null;
         if (!TELEFONICA_SSID.equals(this.normalizeSSID(wifiInfo))) {
             // post error
             publishProgress(getString(R.string.not_connected), getString(R.string.not_connected_detail),
