@@ -39,6 +39,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Checkable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -57,9 +58,9 @@ public class WifiConnectorActivity extends Activity {
 	private ImageView statusImage;
 	private TextView positionView;
 	private TextView printersView;
-	private Checkable colorCheck;
-	private Checkable a3Check;
-	private Checkable copyCheck;
+	private CheckBox colorCheck;
+	private CheckBox a3Check;
+	private CheckBox copyCheck;
 
 	private int status = WifiConnectivityService.STATUS_NOT_CONNECTED;
 
@@ -119,9 +120,37 @@ public class WifiConnectorActivity extends Activity {
 		statusImage = (ImageView) this.findViewById(R.id.statusImage);
 		positionView = (TextView) this.findViewById(R.id.position);
 		printersView = (TextView) this.findViewById(R.id.smallPrinters);
-		colorCheck = (Checkable) this.findViewById(R.id.colorSwitch);
-		a3Check = (Checkable) this.findViewById(R.id.sizeSwitch);
-		copyCheck = (Checkable) this.findViewById(R.id.copySwitch);
+		colorCheck = (CheckBox) this.findViewById(R.id.colorSwitch);
+		colorCheck.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				//printersView.setText(R.string.printer_notfound);
+				// just trigger WiFi-Scanning
+				startScan();
+			}
+
+		});
+		a3Check = (CheckBox) this.findViewById(R.id.sizeSwitch);
+		a3Check.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				//printersView.setText(R.string.printer_notfound);
+				// just trigger WiFi-Scanning
+				startScan();
+			}
+
+		});
+
+		copyCheck = (CheckBox) this.findViewById(R.id.copySwitch);
+		copyCheck.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				//printersView.setText(R.string.printer_notfound);
+				// just trigger WiFi-Scanning
+				startScan();
+			}
+
+		});
 
 		updateConnectButton(status);
 	}

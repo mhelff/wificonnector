@@ -34,18 +34,13 @@ public class WifiConnectivityReceiver extends BroadcastReceiver {
 
 	public static final String TAG = "WifiConnectivityReceiver";
 
-	private WifiManager wifiManager = null;
-
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Log.i(TAG, "action: " + intent.getAction());
 
 		if (intent.getAction()
 				.equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
-			if (wifiManager == null) {
-				wifiManager = (WifiManager) context
-						.getSystemService(Context.WIFI_SERVICE);
-			}
+			
 			Intent locationIntent = new LocationIntent();
 			context.sendBroadcast(locationIntent);
 		}
