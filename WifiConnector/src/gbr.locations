@@ -7,6 +7,11 @@
    {"id":"00:1a:30:bb:ed:c0","type":1,"floor":0,"block":"D","position":"Nord / Meet \u0026 Eat","building":"GBR"},
    {"id":"00:0f:90:f9:ad:00","type":1,"floor":0,"block":"E","position":"Nord","building":"GBR"},
    
+   {"id":"GBR_E0_M525","type":2,"name":"HP M525","floor":0,"block":"E","position":"025","building":"GBR", "capabilities":["BW","A4","Copy"]},
+   {"id":"GBR_E0_M775z","type":2,"name":"HP M775z","floor":0,"block":"E","position":"024","building":"GBR", "capabilities":["Color","BW","A3","A4","Copy"]},
+   {"id":"GBR_C0_M775z","type":2,"name":"HP M775z","floor":0,"block":"C","position":"024","building":"GBR", "capabilities":["Color","BW","A3","A4","Copy"]},
+   
+
    {"id":"00:19:a9:ce:01:30","type":1,"floor":1,"block":"A","position":"West","building":"GBR"},
    {"id":"00:11:92:f8:9f:40","type":1,"floor":1,"block":"A","position":"Ost","building":"GBR"},
    {"id":"00:19:a9:cc:f7:90","type":1,"floor":1,"block":"C","position":"Nord","building":"GBR"},
@@ -15,6 +20,14 @@
    {"id":"00:0f:90:94:67:90","type":1,"floor":1,"block":"D","position":"Süd","building":"GBR"},
    {"id":"00:0f:90:72:3c:80","type":1,"floor":1,"block":"E","position":"Nord","building":"GBR"},
    {"id":"00:11:92:f4:21:e0","type":1,"floor":1,"block":"E","position":"Süd","building":"GBR"},
+   {"id":"GBR_C1_CM4540","type":2,"name":"HP CM4540","floor":1,"block":"C","position":"125","building":"GBR", "capabilities":["Color","BW","A4","Copy"]},
+   {"id":"GBR_E1_M4555fskm","type":2,"name":"HP M4555fskm","floor":1,"block":"E","position":"118","building":"GBR", "capabilities":["BW","A4","Copy"]},
+   {"id":"GBR_A1_M525","type":2,"name":"HP M525","floor":1,"block":"A","position":"154","building":"GBR", "capabilities":["BW","A4","Copy"]},
+   {"id":"GBR_C1_M525","type":2,"name":"HP M525","floor":0,"block":"C","position":"106","building":"GBR", "capabilities":["BW","A4","Copy"]},
+   {"id":"GBR_D1_M525","type":2,"name":"HP M525","floor":0,"block":"C","position":"132","building":"GBR", "capabilities":["BW","A4","Copy"]},
+   {"id":"GBR_A1_M775z","type":2,"name":"HP M775z","floor":0,"block":"A","position":"124","building":"GBR", "capabilities":["Color","BW","A3","A4","Copy"]},
+   {"id":"GBR_B1_M775z","type":2,"name":"HP M775z","floor":0,"block":"B","position":"111","building":"GBR", "capabilities":["Color","BW","A3","A4","Copy"]},
+      	         
       
    {"id":"00:19:a9:cc:fb:60","type":1,"floor":2,"block":"A","position":"West","building":"GBR"},
    {"id":"00:19:a9:cd:ff:20","type":1,"floor":2,"block":"A","position":"Mitte","building":"GBR"},
@@ -53,7 +66,7 @@
    {"id":"00:0f:90:94:68:30","type":1,"floor":5,"block":"A","position":"Mitte","building":"GBR"},
    {"id":"00:11:20:70:4c:60","type":1,"floor":5,"block":"A","position":"Ost","building":"GBR"},
    {"id":"00:1d:46:7d:c4:f0","type":1,"floor":5,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:02:70","type":1,"floor":5,"block":"C","position":"Nord","building":"GBR"},
+   {"id":"00:19:a9:cd:02:70","type":1,"floor":5,"block":"C","position":"Süd","building":"GBR"},
    {"id":"00:19:a9:cd:02:00","type":1,"floor":5,"block":"D","position":"Nord","building":"GBR"},
    {"id":"00:19:a9:cc:f4:d0","type":1,"floor":5,"block":"D","position":"Süd","building":"GBR"},
    {"id":"00:19:a9:cd:0d:60","type":1,"floor":5,"block":"E","position":"Nord","building":"GBR"},
@@ -70,6 +83,7 @@
    {"id":"00:19:a9:cc:f5:80","type":1,"floor":6,"block":"E","position":"Nord","building":"GBR"},
    {"id":"00:19:a9:cc:f1:f0","type":1,"floor":6,"block":"E","position":"Süd","building":"GBR"},
    
+   {"id":"GBR_E6_M725z","type":2,"name":"HP M725z","floor":6,"block":"E","position":"633","building":"GBR", "capabilities":["BW","A3","A4","Copy"]},
    
    {"id":"00:11:5c:1b:a4:f0","type":1,"floor":7,"block":"A","position":"West","building":"GBR"},
    {"id":"00:0f:90:f9:b2:20","type":1,"floor":7,"block":"A","position":"Mitte","building":"GBR"},
@@ -92,5 +106,8 @@
    {"id":"00:19:a9:cc:f6:70","type":1,"floor":8,"block":"D","position":"Süd","building":"GBR"},
    {"id":"00:19:a9:cc:f5:50","type":1,"floor":8,"block":"E","position":"Nord","building":"GBR"},
    {"id":"00:19:a9:cc:f2:d0","type":1,"floor":8,"block":"E","position":"Süd","building":"GBR"}
+   
+   
+   
    
    ]

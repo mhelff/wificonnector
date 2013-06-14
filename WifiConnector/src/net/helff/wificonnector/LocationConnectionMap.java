@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -66,7 +67,7 @@ public class LocationConnectionMap {
      * @return the list of all valid destinations from the given Location.
      */
     public Set<Location> getDestinations(Location location) {
-        return distances.get(location).keySet();
+        return distances.get(location) != null ? distances.get(location).keySet() : new HashSet<Location>();
     }
 
 }

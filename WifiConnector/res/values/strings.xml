@@ -59,4 +59,14 @@
     <string name="signup_button">Sign-Up now!</string>
     <string name="send">Send</string>
     
+    <string name="printer_notfound">No printers found</string>
+    <string name="printer_color">Color</string>
+    <string name="printer_size">Size A3</string>
+    <string name="printer_copy">Copier</string>
+    <string name="printer_found">Printers near to you:</string>
+    <string name="printer_location">Location:</string>
+    <string name="printer_distance">Distance:</string>
+    
+    <string name="crash_toast_text">WifiConnector crash report</string>
+    
 </resources>

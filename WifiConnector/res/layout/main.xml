@@ -51,15 +51,6 @@
             android:layout_marginRight="5dp"
             android:src="@drawable/wifi_off" />
 
-        <ProgressBar
-            android:id="@+id/connectionProgress"
-            style="?android:attr/progressBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:visibility="gone" />
-
         <LinearLayout
             android:id="@+id/linearLayout5"
             android:layout_width="fill_parent"
@@ -97,7 +88,7 @@
     <RelativeLayout
         android:id="@+id/relativeLayout3"
         android:layout_width="fill_parent"
-        android:layout_height="64dp" >
+        android:layout_height="166dp" >
 
         <LinearLayout
             android:id="@+id/LinearLayoutp1"
@@ -135,14 +126,51 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:src="@drawable/ic_menu_refresh" />
+		
+        
+        <CheckBox
+            android:id="@+id/colorSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:text="@string/printer_color" />
+
+        <CheckBox
+            android:id="@+id/sizeSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="15dp"
+            android:layout_toRightOf="@+id/colorSwitch"
+            android:text="@string/printer_size" />
+
+        <CheckBox
+            android:id="@+id/copySwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:text="@string/printer_copy" />
+
+		<TextView
+		    android:id="@+id/smallPrinters"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_above="@+id/colorSwitch"
+		    android:layout_alignLeft="@+id/linearLayoutp2"
+		    android:layout_alignParentRight="true"
+		    android:layout_below="@+id/buttonPositionRefresh"
+		    android:singleLine="false"
+		    android:text="@string/printer_notfound"
+		    android:textAppearance="?android:attr/textAppearanceSmall" />
 
     </RelativeLayout>
-
 
     <RelativeLayout
         android:id="@+id/relativeLayout1"
         android:layout_width="fill_parent"
-        android:layout_height="263dp"
+        android:layout_height="145dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp" >
 
@@ -150,10 +178,10 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginBottom="10dp"
+            android:layout_centerVertical="false"
+            android:layout_marginBottom="5dp"
             android:text="@string/signup_text"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <Button
             android:id="@+id/signupButton"

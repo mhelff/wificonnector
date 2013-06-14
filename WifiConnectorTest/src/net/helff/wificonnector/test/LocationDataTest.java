@@ -18,7 +18,7 @@ public class LocationDataTest extends TestCase {
 	public void testExtractToken() throws Exception {
 
 		Collection<Location> l = LocationData.getLocations();
-		assertEquals(76, l.size());
+		assertEquals(79, l.size());
 	}
 	
 	public void testRouting() throws Exception {
@@ -77,7 +77,7 @@ public class LocationDataTest extends TestCase {
                     }
                 } else if(block != 'B') {
                     Location nord = LocationData.getLocation(floor, String.valueOf(block), "Nord");
-                    Location sued = LocationData.getLocation(floor, String.valueOf(block), "SŸd");
+                    Location sued = LocationData.getLocation(floor, String.valueOf(block), "Sï¿½d");
                     if(nord != null) {
                         if(sued != null) {
                             conns.add(new LocationConnection(nord.getId(), sued.getId(), 30));
@@ -88,7 +88,7 @@ public class LocationDataTest extends TestCase {
                         }
                     }
                     if(sued != null) {
-                        Location suedoben = LocationData.getLocation(floor+1, String.valueOf(block), "SŸd");
+                        Location suedoben = LocationData.getLocation(floor+1, String.valueOf(block), "Sï¿½d");
                         if(suedoben != null) {
                             conns.add(new LocationConnection(sued.getId(), suedoben.getId(), 40));
                         }

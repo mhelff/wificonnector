@@ -58,4 +58,12 @@
     <string name="signup_text">Diese App ist nicht im Android Market erhältlich. Wenn Du über neue Versionen informiert werden möchtest, nutze den Button unten und sende mir eine eMail!</string>
     <string name="signup_button">Jetzt registrieren!</string>
     <string name="send">Senden</string>
+    
+    <string name="printer_notfound">Keine Drucker gefunden</string>
+    <string name="printer_color">Farbe</string>
+    <string name="printer_size">A3</string>
+    <string name="printer_copy">Kopierer</string>
+    <string name="printer_found">Drucker in der Nähe:</string>
+    <string name="printer_location">Standort:</string>
+    <string name="printer_distance">Entfernung:</string>
 </resources>

@@ -25,10 +25,66 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+/**
+ * 
+ * 2;A252;4153;CM4540;MFP;Farbe;A4
+2;C206;4194;M4555fskm;MFP;SW;A4
+2;B206;4170;M525;MFP;SW;A4
+2;D236;1487;M525;MFP;SW;A4
+2;D207;4217;M525;MFP;SW;A4
+2;B238;4172;M775z;MFP;Farbe;A3
+2;E225;4248;M775z;MFP;Farbe;A3
+3;C331;4196;CM4540;MFP;Farbe;A4
+3;B345;4175;M4555fskm;MFP;SW;A4
+3;A326;4155;M525;MFP;SW;A4
+3;E315;4253;M525;MFP;SW;A4
+3;C316;4198;M725z;MFP;SW;A3
+3;D331;4220;M725z;MFP;SW;A3
+3;A345;4159;M775z;MFP;Farbe;A3
+3;E336;4252;M775z;MFP;Farbe;A3
+4;C418;7516;M4555fskm;MFP;SW;A4
+4;C430;4199;M4555fskm;MFP;SW;A4
+4;E430;4256;M4555fskm;MFP;SW;A4
+4;A414;1355;M525;MFP;SW;A4
+4;E408;;M525;MFP;SW;A4
+4;A432;4157;M725z;MFP;SW;A3
+4;B445;4177;M775z;MFP;Farbe;A3
+4;D425;4224;M775z;MFP;Farbe;A3
+4;E404;4156;M775z;MFP;Farbe;A3
+5;C503;4203;M4555fskm;MFP;SW;A4
+5;D506;4228;M4555fskm;MFP;SW;A4
+5;E504;4167;M4555fskm;MFP;SW;A4
+5;A548;4262;M725z;MFP;SW;A3
+5;B504;4430;M725z;MFP;SW;A3
+5;A514;4260;M775z;MFP;Farbe;A3
+5;D525;;M775z;MFP;Farbe;A3
+6;C625;;CLJ5550dn;Drucker;Farbe;A3
+6;A626;4317;M4555fskm;MFP;SW;A4
+6;C625;4205;M4555fskm;MFP;SW;A4
+6;D631;4232;M4555fskm;MFP;SW;A4
+6;A645;2111;M525;MFP;SW;A4
+6;B621;8491;M525;MFP;SW;A4
+6;E633;4204;M725z;MFP;SW;A3
+7;A745;7521;CM4540;MFP;Farbe;A4
+7;C708;4209;M4555fskm;MFP;SW;A4
+7;D732;4236;M4555fskm;MFP;SW;A4
+7;E714;4243;M4555fskm;MFP;SW;A4
+7;B747;4187;M775z;MFP;Farbe;A3
+8;A826;4164;M4555fskm;MFP;SW;A4
+8;A858;4165;M525;MFP;SW;A4
+8;D821;2080;M775z;MFP;Farbe;A3
+ * @author helffm
+ *
+ */
 
 public class LocationData {
 
@@ -39,179 +95,38 @@ public class LocationData {
         Gson g = new Gson();
         Type collectionType = new TypeToken<Collection<Location>>(){}.getType();
         Collection<Location> l = g.fromJson(new InputStreamReader(is), collectionType);
-        addAllLocations(l);
-        /*addLocation("00:1a:30:bb:ed:c0", "C", 0, "Meet & Eat");
-        addLocation("00:19:a9:cc:f9:b0", "A", 0, "West");
-        addLocation("00:19:a9:cc:f8:50", "C", 0, "Nord");
-        addLocation("00:19:a9:cc:f9:30", "C", 0, "Poststelle");
-        addLocation("00:19:a9:cc:f5:10", "A", 0, "Ost");
-        addLocation("00:0f:90:f9:ad:00", "E", 0, "Nord");
-        
-        addLocation("00:19:a9:cc:f7:d0", "A", 0, "Empfang"); // this is 1. Floor Near D
-        addLocation("00:19:a9:ce:01:30", "A", 1, "West");
-        addLocation("00:11:92:f8:9f:40", "A", 1, "Ost");
-        addLocation("00:0f:90:72:3c:80", "E", 1, "Nord");
-        addLocation("00:11:92:f4:21:e0", "E", 1, "SŸd");
-        addLocation("00:0f:90:93:ee:a0", "D", 1, "Nord");
-        addLocation("00:0f:90:94:67:90", "D", 1, "SŸd");
-        addLocation("00:19:a9:cc:f7:90", "C", 1, "Nord");
-        addLocation("00:19:a9:cd:03:80", "C", 1, "SŸd");
-        
-        addLocation("00:12:43:48:10:c0", "E", 2, "SŸd");
-        addLocation("00:13:1a:96:12:f0", "E", 2, "Nord");
-        addLocation("00:13:1a:96:21:80", "A", 2, "Ost");
-        addLocation("00:19:a9:cd:ff:20", "A", 2, "Mitte");
-        addLocation("00:19:a9:cc:fb:60", "A", 2, "West");
-        addLocation("00:0f:90:f9:d0:10", "D", 2, "Nord");
-        addLocation("00:19:a9:cd:e2:20", "D", 2, "SŸd");
-        
-        addLocation("00:19:a9:cc:f9:f0", "E", 3, "SŸd");
-        addLocation("00:19:a9:cd:02:40", "E", 3, "Nord");
-        addLocation("00:19:a9:cd:f8:10", "A", 3, "Ost");
-        addLocation("00:19:a9:cd:de:90", "A", 3, "Mitte");
-        addLocation("00:19:a9:cd:e9:20", "A", 3, "West");
-        addLocation("00:19:a9:cd:03:30", "D", 3, "Nord");
-        addLocation("00:19:a9:cd:f5:80", "D", 3, "SŸd");
-        addLocation("00:19:a9:cd:0a:c0", "C", 3, "Nord");
-        addLocation("00:19:a9:cd:f7:00", "C", 3, "SŸd");
-        
-        addLocation("00:19:a9:cd:fe:e0", "E", 4, "Nord");
-        addLocation("00:19:a9:cd:01:e0", "E", 4, "SŸd");
-        addLocation("00:19:a9:cd:e4:e0", "A", 4, "Ost");
-        addLocation("00:19:a9:ce:00:c0", "A", 4, "Mitte");
-        addLocation("00:19:a9:cd:04:60", "A", 4, "West");
-        addLocation("00:19:a9:cd:fa:80", "D", 4, "Nord");
-        addLocation("00:19:a9:cc:f2:30", "D", 4, "SŸd");
-        addLocation("00:19:a9:cd:15:60", "C", 4, "Nord");
-        addLocation("00:19:a9:cc:f8:c0", "C", 4, "SŸd");
-        
-        addLocation("00:1d:46:7d:c4:f0", "C", 5, "Nord");
-        addLocation("00:19:a9:cd:02:70", "C", 5, "Nord");
-        addLocation("00:12:43:48:0e:60", "A", 5, "West");
-        addLocation("00:0f:90:94:68:30", "A", 5, "Mitte");
-        addLocation("00:11:20:70:4c:60", "A", 5, "Ost");
-        addLocation("00:19:a9:cd:02:00", "D", 5, "Nord");
-        addLocation("00:19:a9:cc:f4:d0", "D", 5, "SŸd");
-        addLocation("00:19:a9:cd:0d:60", "E", 5, "Nord");
-        addLocation("00:19:a9:cd:07:40", "E", 5, "SŸd");
-        
-        addLocation("00:19:a9:cc:f5:80", "E", 6, "Nord");
-        addLocation("00:19:a9:cc:f1:f0", "E", 6, "SŸd");
-        addLocation("00:0f:90:94:64:30", "A", 6, "Ost");
-        addLocation("00:0f:90:94:64:c0", "A", 6, "Mitte");
-        addLocation("00:19:a9:cc:f3:30", "A", 6, "West");
-        addLocation("00:19:a9:cd:f0:f0", "C", 6, "Nord");
-        addLocation("00:19:a9:cd:0a:90", "C", 6, "SŸd");
-        addLocation("00:19:a9:cc:fa:50", "D", 6, "Nord");
-        addLocation("00:19:a9:cc:f7:20", "D", 6, "SŸd");
-        
-        addLocation("00:19:a9:cc:f9:50", "E", 7, "SŸd");
-        addLocation("00:19:a9:cc:f7:e0", "E", 7, "Nord");
-        addLocation("00:19:a9:cd:fc:60", "A", 7, "Ost");
-        addLocation("00:0f:90:f9:b2:20", "A", 7, "Mitte");
-        addLocation("00:11:5c:1b:a4:f0", "A", 7, "West");
-        addLocation("00:0f:90:93:ef:e0", "D", 7, "Nord");
-        addLocation("00:0f:90:94:65:30", "D", 7, "SŸd");
-        addLocation("00:11:21:e0:b9:20", "C", 7, "Nord");
-        addLocation("00:11:21:e0:bc:00", "C", 7, "SŸd");
-        
-        addLocation("00:19:a9:cc:f2:d0", "E", 8, "SŸd");
-        addLocation("00:19:a9:cc:f5:50", "E", 8, "Nord");
-        addLocation("00:19:a9:cd:fc:20", "A", 8, "Ost");
-        addLocation("00:1a:30:bb:ea:80", "A", 8, "Mitte");
-        addLocation("00:1a:30:bb:ea:e0", "A", 8, "West");
-        addLocation("00:19:a9:cd:fd:40", "D", 8, "Nord");
-        addLocation("00:19:a9:cc:f6:70", "D", 8, "SŸd");
-        addLocation("00:1a:30:bb:97:80", "C", 8, "Nord");
-        addLocation("00:1a:30:bb:96:50", "C", 8, "SŸd"); */
-        
-    }
- /*[{"id":"00:0f:90:94:64:30","type":1,"floor":6,"block":"A","position":"Ost","building":"GBR"},
-   {"id":"00:19:a9:cc:f5:80","type":1,"floor":6,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:f5:80","type":1,"floor":3,"block":"D","position":"SŸd","building":"GBR"},
-   {"id":"00:19:a9:cc:f4:d0","type":1,"floor":5,"block":"D","position":"SŸd","building":"GBR"},
-   {"id":"00:19:a9:cc:f1:f0","type":1,"floor":6,"block":"E","position":"SŸd","building":"GBR"},
-   {"id":"00:11:21:e0:bc:00","type":1,"floor":7,"block":"C","position":"SŸd","building":"GBR"},
-   {"id":"00:19:a9:cd:04:60","type":1,"floor":4,"block":"A","position":"West","building":"GBR"},
-   {"id":"00:19:a9:cd:fc:20","type":1,"floor":8,"block":"A","position":"Ost","building":"GBR"},
-   {"id":"00:11:5c:1b:a4:f0","type":1,"floor":7,"block":"A","position":"West","building":"GBR"},
-   {"id":"00:12:43:48:0e:60","type":1,"floor":5,"block":"A","position":"West","building":"GBR"},
-   {"id":"00:1a:30:bb:ea:e0","type":1,"floor":8,"block":"A","position":"West","building":"GBR"},
-   {"id":"00:0f:90:93:ef:e0","type":1,"floor":7,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:0a:c0","type":1,"floor":3,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:1d:46:7d:c4:f0","type":1,"floor":5,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:fb:60","type":1,"floor":2,"block":"A","position":"West","building":"GBR"},
-   {"id":"00:19:a9:cc:f9:50","type":1,"floor":7,"block":"E","position":"SŸd","building":"GBR"},
-   {"id":"00:19:a9:cc:f2:30","type":1,"floor":4,"block":"D","position":"SŸd","building":"GBR"},
-   {"id":"00:19:a9:cd:0d:60","type":1,"floor":5,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:ff:20","type":1,"floor":2,"block":"A","position":"Mitte","building":"GBR"},
-   {"id":"00:0f:90:72:3c:80","type":1,"floor":1,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f3:30","type":1,"floor":6,"block":"A","position":"West","building":"GBR"},
-   {"id":"00:19:a9:cd:fc:60","type":1,"floor":7,"block":"A","position":"Ost","building":"GBR"},
-   {"id":"00:19:a9:ce:00:c0","type":1,"floor":4,"block":"A","position":"Mitte","building":"GBR"},
-   {"id":"00:11:92:f8:9f:40","type":1,"floor":1,"block":"A","position":"Ost","building":"GBR"},
-   {"id":"00:19:a9:cc:f7:d0","type":1,"floor":0,"block":"A","position":"Empfang","building":"GBR"},
-   {"id":"00:19:a9:cd:07:40","type":1,"floor":5,"block":"E","position":"SŸd","building":"GBR"},
-   {"id":"00:11:21:e0:b9:20","type":1,"floor":7,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:1a:30:bb:96:50","type":1,"floor":8,"block":"C","position":"SŸd","building":"GBR"},
-   {"id":"00:19:a9:cc:f5:50","type":1,"floor":8,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:1a:30:bb:97:80","type":1,"floor":8,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:e9:20","type":1,"floor":3,"block":"A","position":"West","building":"GBR"},
-   {"id":"00:19:a9:cd:f7:00","type":1,"floor":3,"block":"C","position":"SŸd","building":"GBR"},
-   {"id":"00:19:a9:cd:01:e0","type":1,"floor":4,"block":"E","position":"SŸd","building":"GBR"},
-   {"id":"00:13:1a:96:12:f0","type":1,"floor":2,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f7:e0","type":1,"floor":7,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:02:70","type":1,"floor":5,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f6:70","type":1,"floor":8,"block":"D","position":"SŸd","building":"GBR"},
-   {"id":"00:19:a9:cd:e2:20","type":1,"floor":2,"block":"D","position":"SŸd","building":"GBR"},
-   {"id":"00:19:a9:cd:15:60","type":1,"floor":4,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f5:10","type":1,"floor":0,"block":"A","position":"Ost","building":"GBR"},
-   {"id":"00:0f:90:94:65:30","type":1,"floor":7,"block":"D","position":"SŸd","building":"GBR"},
-   {"id":"00:19:a9:ce:01:30","type":1,"floor":1,"block":"A","position":"West","building":"GBR"},
-   {"id":"00:19:a9:cc:f7:90","type":1,"floor":1,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:1a:30:bb:ea:80","type":1,"floor":8,"block":"A","position":"Mitte","building":"GBR"},
-   {"id":"00:19:a9:cc:f8:c0","type":1,"floor":4,"block":"C","position":"SŸd","building":"GBR"},
-   {"id":"00:0f:90:94:64:c0","type":1,"floor":6,"block":"A","position":"Mitte","building":"GBR"},
-   {"id":"00:13:1a:96:21:80","type":1,"floor":2,"block":"A","position":"Ost","building":"GBR"},
-   {"id":"00:19:a9:cc:f9:b0","type":1,"floor":0,"block":"A","position":"West","building":"GBR"},
-   {"id":"00:19:a9:cd:fd:40","type":1,"floor":8,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:12:43:48:10:c0","type":1,"floor":2,"block":"E","position":"SŸd","building":"GBR"},
-   {"id":"00:11:20:70:4c:60","type":1,"floor":5,"block":"A","position":"Ost","building":"GBR"},
-   {"id":"00:19:a9:cc:f9:30","type":1,"floor":0,"block":"C","position":"Poststelle","building":"GBR"},
-   {"id":"00:19:a9:cc:f9:f0","type":1,"floor":3,"block":"E","position":"SŸd","building":"GBR"},
-   {"id":"00:11:92:f4:21:e0","type":1,"floor":1,"block":"E","position":"SŸd","building":"GBR"},
-   {"id":"00:19:a9:cd:02:40","type":1,"floor":3,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:03:80","type":1,"floor":1,"block":"C","position":"SŸd","building":"GBR"},
-   {"id":"00:19:a9:cd:f0:f0","type":1,"floor":6,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:03:30","type":1,"floor":3,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f2:d0","type":1,"floor":8,"block":"E","position":"SŸd","building":"GBR"},
-   {"id":"00:19:a9:cd:f8:10","type":1,"floor":3,"block":"A","position":"Ost","building":"GBR"},
-   {"id":"00:19:a9:cd:de:90","type":1,"floor":3,"block":"A","position":"Mitte","building":"GBR"},
-   {"id":"00:19:a9:cc:f7:20","type":1,"floor":6,"block":"D","position":"SŸd","building":"GBR"},
-   {"id":"00:1a:30:bb:ed:c0","type":1,"floor":0,"block":"C","position":"Meet \u0026 Eat","building":"GBR"},
-   {"id":"00:19:a9:cc:fa:50","type":1,"floor":6,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:0a:90","type":1,"floor":6,"block":"C","position":"SŸd","building":"GBR"},
-   {"id":"00:19:a9:cd:02:00","type":1,"floor":5,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:fe:e0","type":1,"floor":4,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cc:f8:50","type":1,"floor":0,"block":"C","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:fa:80","type":1,"floor":4,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:0f:90:94:67:90","type":1,"floor":1,"block":"D","position":"SŸd","building":"GBR"},
-   {"id":"00:0f:90:f9:ad:00","type":1,"floor":0,"block":"E","position":"Nord","building":"GBR"},
-   {"id":"00:0f:90:93:ee:a0","type":1,"floor":1,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:0f:90:94:68:30","type":1,"floor":5,"block":"A","position":"Mitte","building":"GBR"},
-   {"id":"00:0f:90:f9:d0:10","type":1,"floor":2,"block":"D","position":"Nord","building":"GBR"},
-   {"id":"00:19:a9:cd:e4:e0","type":1,"floor":4,"block":"A","position":"Ost","building":"GBR"},
-   {"id":"00:0f:90:f9:b2:20","type":1,"floor":7,"block":"A","position":"Mitte","building":"GBR"}]
-
-*/
-    private static void addLocation(String bssid, String block, int floor, String position) {
-        locations.put(bssid, new Location(bssid, Location.TYPE_WIFI, floor, block, position));
+        addAllLocations(l);       
     }
     
     private static void addAllLocations(Collection<Location> ls) {
         for(Location l : ls) {
             locations.put(l.getId(), l);
         }
+    }
+    
+    public static SortedMap<Integer, Location> findPrintersAtLocation(Location pos, boolean color, boolean a3, boolean copier) {
+    	SortedMap<Integer, Location> result = new TreeMap<Integer, Location>();
+    	
+    	LocationConnectionMap rm = new LocationConnectionMap();
+	    DijkstraEngine de = new DijkstraEngine(rm);
+    	
+    	Collection<String> neededCapabilities = new HashSet<String>();
+    	neededCapabilities.add(color ? Location.CAPABILITY_COLOR : Location.CAPABILITY_BW);
+    	neededCapabilities.add(a3 ? Location.CAPABILITY_SIZE_A3 : Location.CAPABILITY_SIZE_A4);
+    	if(copier) {
+    		neededCapabilities.add(Location.CAPABILITY_COPY);
+    	}
+    	
+    	// first find all matching printers:
+    	for(Location l : locations.values()) {
+    		if(l.getType() == Location.TYPE_PRINTER && l.hasCapabilities(neededCapabilities)) {
+    			// find distance
+    			de.execute(pos, l);
+    		    result.put(de.getShortestDistance(l), l);
+    		}
+    	}
+    	
+    	return result;
     }
     
     public static Location getLocation(String bssid) {
