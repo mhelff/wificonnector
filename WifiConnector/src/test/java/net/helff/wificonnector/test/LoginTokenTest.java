@@ -1,38 +1,38 @@
 package net.helff.wificonnector.test;
 
 import junit.framework.TestCase;
-import net.helff.wificonnector.SMSReceiver;
+import net.helff.wificonnector.LoginToken;
 
-public class SMSReceiverTest extends TestCase {
+public class LoginTokenTest extends TestCase {
 
 	final String SMS_MSG = "Bitte verwenden sie a1b2c3 als Ihren Telefonica WLAN Token.";
 	final String SMS_TOKEN = "a1b2c3";
 
 	public void testExtractToken() throws Exception {
 
-		SMSReceiver r = new SMSReceiver(null);
-		String token = r.extractToken(SMS_MSG);
+		LoginToken t = new LoginToken();
+		String token = t.extractTokenFromSms(SMS_MSG);
 		assertEquals(SMS_TOKEN, token);
 	}
 
 	public void testExtractTokenNullMessage() throws Exception {
 
-		SMSReceiver r = new SMSReceiver(null);
-		String token = r.extractToken(null);
+		LoginToken t = new LoginToken();
+		String token = t.extractTokenFromSms(null);
 		assertNull(token);
 	}
 
 	public void testExtractTokenEmptyMessage() throws Exception {
 
-		SMSReceiver r = new SMSReceiver(null);
-		String token = r.extractToken("");
+		LoginToken t = new LoginToken();
+		String token = t.extractTokenFromSms("");
 		assertNull(token);
 	}
 	
 	public void testExtractTokenWrongMessage() throws Exception {
 
-		SMSReceiver r = new SMSReceiver(null);
-		String token = r.extractToken("Hallo hier ist ihr Token; as34sd");
+		LoginToken t = new LoginToken();
+		String token = t.extractTokenFromSms("Hallo hier ist ihr Token; as34sd");
 		assertNull(token);
 	}
 

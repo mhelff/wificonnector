@@ -20,9 +20,15 @@
 
 package net.helff.wificonnector;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class LoginToken {
     
     public static final String TOKEN_NOT_SET = "not-set";
+    
+    private static final Pattern TOKEN_MSG_REGEX = Pattern
+			.compile("Bitte verwenden sie ([A-Z,a-z,0-9]+) als Ihren Telefonica WLAN Token.");
     
     private String token;
     
@@ -45,4 +51,19 @@ public class LoginToken {
     public void reset() {
         token = String.valueOf(TOKEN_NOT_SET);
     }
+    
+    public String extractTokenFromSms(String msg) {
+    	String splitString = null;
+    	
+		if (msg != null) {
+			Matcher m = TOKEN_MSG_REGEX.matcher(msg);
+			if (m.matches() && m.groupCount() == 1) {
+				splitString = m.group(1);
+				if (splitString != null) {
+					token = splitString;
+				}
+			}
+		}
+		return splitString;
+	}
 }
