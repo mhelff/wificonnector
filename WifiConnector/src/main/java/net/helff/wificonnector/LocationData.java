@@ -88,9 +88,10 @@ import com.google.gson.reflect.TypeToken;
 
 public class LocationData {
 
-    private static Map<String, Location> locations = new HashMap<String, Location>();
+    private static Map<String, Location> locations;
 
     static {
+    	locations = new HashMap<String, Location>();
         InputStream is = LocationData.class.getResourceAsStream("/gbr.locations");
         Gson g = new Gson();
         Type collectionType = new TypeToken<Collection<Location>>(){}.getType();
@@ -99,6 +100,7 @@ public class LocationData {
     }
     
     private static void addAllLocations(Collection<Location> ls) {
+    	locations = new HashMap<String, Location>();
         for(Location l : ls) {
             locations.put(l.getId(), l);
         }

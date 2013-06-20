@@ -36,7 +36,7 @@
 
     <modules>
         <module>WifiConnector</module>
-        <module>WifiConnectorTest</module>
+<!--        <module>WifiConnectorTest</module> -->
     </modules>
 
     <properties>

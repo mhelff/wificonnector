@@ -18,7 +18,7 @@ public class LocationDataTest extends TestCase {
 	public void testExtractToken() throws Exception {
 
 		Collection<Location> l = LocationData.getLocations();
-		assertEquals(79, l.size());
+		assertEquals(87, l.size());
 	}
 	
 	public void testRouting() throws Exception {
@@ -28,7 +28,7 @@ public class LocationDataTest extends TestCase {
 	    assertEquals(330, de.getShortestDistance(LocationData.getLocation(0, "E", "Nord")));
 	}
 	
-	public void testGenerateNeighbors() throws Exception {
+	/*public void testGenerateNeighbors() throws Exception {
 
 	    Set<LocationConnection> conns = new HashSet<LocationConnection>();
 	    
@@ -77,7 +77,7 @@ public class LocationDataTest extends TestCase {
                     }
                 } else if(block != 'B') {
                     Location nord = LocationData.getLocation(floor, String.valueOf(block), "Nord");
-                    Location sued = LocationData.getLocation(floor, String.valueOf(block), "S�d");
+                    Location sued = LocationData.getLocation(floor, String.valueOf(block), "Süd");
                     if(nord != null) {
                         if(sued != null) {
                             conns.add(new LocationConnection(nord.getId(), sued.getId(), 30));
@@ -88,7 +88,7 @@ public class LocationDataTest extends TestCase {
                         }
                     }
                     if(sued != null) {
-                        Location suedoben = LocationData.getLocation(floor+1, String.valueOf(block), "S�d");
+                        Location suedoben = LocationData.getLocation(floor+1, String.valueOf(block), "Süd");
                         if(suedoben != null) {
                             conns.add(new LocationConnection(sued.getId(), suedoben.getId(), 40));
                         }
@@ -100,6 +100,6 @@ public class LocationDataTest extends TestCase {
         Gson g = new Gson();
         //System.out.println( g.toJson(conns) );
         
-    }
+    } */
 
 }

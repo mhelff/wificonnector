@@ -118,7 +118,7 @@ public class DijkstraEngine
         
         // add source
         setShortestDistance(start, 0);
-        unsettledNodes.add(start);
+        //unsettledNodes.add(start);
     }
     
     /**
