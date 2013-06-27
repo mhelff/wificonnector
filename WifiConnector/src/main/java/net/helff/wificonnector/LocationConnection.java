@@ -3,26 +3,26 @@ package net.helff.wificonnector;
 
 public class LocationConnection {
 
-    private String a;
-    private String b;
-    private int d;
+    private String start;
+    private String end;
+    private double distance;
     
-    public LocationConnection(String a, String b, int d) {
-        this.a = a;
-        this.b = b;
-        this.d = d;
+    public LocationConnection(String start, String end, double distance) {
+        this.start = start;
+        this.end = end;
+        this.distance = distance;
     }
 
-    public String getA() {
-        return a;
+    public String getStart() {
+        return start;
     }
     
-    public String getB() {
-        return b;
+    public String getEnd() {
+        return end;
     }
 
-    public int getD() {
-        return d;
+    public double getDistance() {
+        return distance;
     }
 
 }

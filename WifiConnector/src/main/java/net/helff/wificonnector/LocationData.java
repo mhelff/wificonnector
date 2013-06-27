@@ -34,54 +34,7 @@ import java.util.TreeMap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-/**
- * 
- * 2;A252;4153;CM4540;MFP;Farbe;A4
-2;C206;4194;M4555fskm;MFP;SW;A4
-2;B206;4170;M525;MFP;SW;A4
-2;D236;1487;M525;MFP;SW;A4
-2;D207;4217;M525;MFP;SW;A4
-2;B238;4172;M775z;MFP;Farbe;A3
-2;E225;4248;M775z;MFP;Farbe;A3
-3;C331;4196;CM4540;MFP;Farbe;A4
-3;B345;4175;M4555fskm;MFP;SW;A4
-3;A326;4155;M525;MFP;SW;A4
-3;E315;4253;M525;MFP;SW;A4
-3;C316;4198;M725z;MFP;SW;A3
-3;D331;4220;M725z;MFP;SW;A3
-3;A345;4159;M775z;MFP;Farbe;A3
-3;E336;4252;M775z;MFP;Farbe;A3
-4;C418;7516;M4555fskm;MFP;SW;A4
-4;C430;4199;M4555fskm;MFP;SW;A4
-4;E430;4256;M4555fskm;MFP;SW;A4
-4;A414;1355;M525;MFP;SW;A4
-4;E408;;M525;MFP;SW;A4
-4;A432;4157;M725z;MFP;SW;A3
-4;B445;4177;M775z;MFP;Farbe;A3
-4;D425;4224;M775z;MFP;Farbe;A3
-4;E404;4156;M775z;MFP;Farbe;A3
-5;C503;4203;M4555fskm;MFP;SW;A4
-5;D506;4228;M4555fskm;MFP;SW;A4
-5;E504;4167;M4555fskm;MFP;SW;A4
-5;A548;4262;M725z;MFP;SW;A3
-5;B504;4430;M725z;MFP;SW;A3
-5;A514;4260;M775z;MFP;Farbe;A3
-5;D525;;M775z;MFP;Farbe;A3
-6;C625;;CLJ5550dn;Drucker;Farbe;A3
-6;A626;4317;M4555fskm;MFP;SW;A4
-6;C625;4205;M4555fskm;MFP;SW;A4
-6;D631;4232;M4555fskm;MFP;SW;A4
-6;A645;2111;M525;MFP;SW;A4
-6;B621;8491;M525;MFP;SW;A4
-6;E633;4204;M725z;MFP;SW;A3
-7;A745;7521;CM4540;MFP;Farbe;A4
-7;C708;4209;M4555fskm;MFP;SW;A4
-7;D732;4236;M4555fskm;MFP;SW;A4
-7;E714;4243;M4555fskm;MFP;SW;A4
-7;B747;4187;M775z;MFP;Farbe;A3
-8;A826;4164;M4555fskm;MFP;SW;A4
-8;A858;4165;M525;MFP;SW;A4
-8;D821;2080;M775z;MFP;Farbe;A3
+/*
  * @author helffm
  *
  */
@@ -89,14 +42,26 @@ import com.google.gson.reflect.TypeToken;
 public class LocationData {
 
     private static Map<String, Location> locations;
+    private static Map<String, WifiLocation> wifi;
+    private static Collection<Printer> printers;
 
     static {
-    	locations = new HashMap<String, Location>();
-        InputStream is = LocationData.class.getResourceAsStream("/gbr.locations");
-        Gson g = new Gson();
+    	Gson g = new Gson();
+    	
+        InputStream is = LocationData.class.getResourceAsStream("/locations.txt");
         Type collectionType = new TypeToken<Collection<Location>>(){}.getType();
         Collection<Location> l = g.fromJson(new InputStreamReader(is), collectionType);
-        addAllLocations(l);       
+        addAllLocations(l);
+        
+        is = LocationData.class.getResourceAsStream("/wifi.txt");
+        collectionType = new TypeToken<Collection<WifiLocation>>(){}.getType();
+        Collection<WifiLocation> wl = g.fromJson(new InputStreamReader(is), collectionType);
+        addAllWifiLocations(wl);
+        
+        is = LocationData.class.getResourceAsStream("/printers.txt");
+        collectionType = new TypeToken<Collection<Printer>>(){}.getType();
+        printers = g.fromJson(new InputStreamReader(is), collectionType);
+               
     }
     
     private static void addAllLocations(Collection<Location> ls) {
@@ -106,38 +71,56 @@ public class LocationData {
         }
     }
     
-    public static SortedMap<Integer, Location> findPrintersAtLocation(Location pos, boolean color, boolean a3, boolean copier) {
-    	SortedMap<Integer, Location> result = new TreeMap<Integer, Location>();
+    private static void addAllWifiLocations(Collection<WifiLocation> ls) {
+    	wifi = new HashMap<String, WifiLocation>();
+        for(WifiLocation l : ls) {
+            wifi.put(l.getId(), l);
+        }
+    }
+    
+    public static SortedMap<Integer, Printer> findPrintersAtLocation(Location pos, boolean color, boolean a3, boolean copier) {
+    	SortedMap<Integer, Printer> result = new TreeMap<Integer, Printer>();
     	
     	LocationConnectionMap rm = new LocationConnectionMap();
 	    DijkstraEngine de = new DijkstraEngine(rm);
     	
     	Collection<String> neededCapabilities = new HashSet<String>();
-    	neededCapabilities.add(color ? Location.CAPABILITY_COLOR : Location.CAPABILITY_BW);
-    	neededCapabilities.add(a3 ? Location.CAPABILITY_SIZE_A3 : Location.CAPABILITY_SIZE_A4);
+    	neededCapabilities.add(color ? Printer.CAPABILITY_COLOR : Printer.CAPABILITY_BW);
+    	neededCapabilities.add(a3 ? Printer.CAPABILITY_SIZE_A3 : Printer.CAPABILITY_SIZE_A4);
     	if(copier) {
-    		neededCapabilities.add(Location.CAPABILITY_COPY);
+    		neededCapabilities.add(Printer.CAPABILITY_COPY);
     	}
     	
     	// first find all matching printers:
-    	for(Location l : locations.values()) {
-    		if(l.getType() == Location.TYPE_PRINTER && l.hasCapabilities(neededCapabilities)) {
+    	for(Printer p : printers) {
+    		if(p.hasCapabilities(neededCapabilities)) {
     			// find distance
-    			de.execute(pos, l);
-    		    result.put(de.getShortestDistance(l), l);
+    			Location l = locations.get(p.getLocation());
+    			if(l != null) {
+    				de.execute(pos, l);
+    				result.put(de.getShortestDistance(l), p);
+    			}
     		}
     	}
     	
     	return result;
     }
     
-    public static Location getLocation(String bssid) {
-        return locations.get(bssid);
+    public static Location getLocation(String id) {
+        return locations.get(id);
+    }
+    
+    public static WifiLocation getWifiLocation(String bssid) {
+        return wifi.get(bssid);
+    }
+    
+    public static Collection<Printer> getPrinters() {
+    	return printers;
     }
     
     public static Location getLocation(int floor, String block, String position) {
         for(Location l : locations.values()) {
-            if(l.getFloor() == floor && l.getBlock().equals(block) && l.getPosition().startsWith(position)) {
+            if(l.getFloor() == floor && block.equals(l.getBlock()) && l.getPosition() != null && l.getPosition().startsWith(position)) {
                 return l;
             }
         }

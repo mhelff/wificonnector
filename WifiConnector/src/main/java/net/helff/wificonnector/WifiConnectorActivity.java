@@ -124,7 +124,7 @@ public class WifiConnectorActivity extends Activity {
 		colorCheck.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				//printersView.setText(R.string.printer_notfound);
+				// printersView.setText(R.string.printer_notfound);
 				// just trigger WiFi-Scanning
 				startScan();
 			}
@@ -134,7 +134,7 @@ public class WifiConnectorActivity extends Activity {
 		a3Check.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				//printersView.setText(R.string.printer_notfound);
+				// printersView.setText(R.string.printer_notfound);
 				// just trigger WiFi-Scanning
 				startScan();
 			}
@@ -145,7 +145,7 @@ public class WifiConnectorActivity extends Activity {
 		copyCheck.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				//printersView.setText(R.string.printer_notfound);
+				// printersView.setText(R.string.printer_notfound);
 				// just trigger WiFi-Scanning
 				startScan();
 			}
@@ -311,39 +311,47 @@ public class WifiConnectorActivity extends Activity {
 			}
 
 			if (strongest != null) {
-				Location location = LocationData.getLocation(strongest.BSSID);
-				if (location != null) {
+				WifiLocation wifilocation = LocationData
+						.getWifiLocation(strongest.BSSID);
+
+				if (wifilocation != null) {
+					Location location = LocationData.getLocation(wifilocation
+							.getLocation());
 					posText = location.getBuilding() + " "
 							+ location.getBlock() + location.getFloor() + " "
 							+ location.getPosition() + " " + strongest.BSSID;
-				}
-				Map<Integer, Location> printers = LocationData
-						.findPrintersAtLocation(location,
-								colorCheck.isChecked(), a3Check.isChecked(),
-								copyCheck.isChecked());
-				if (!printers.isEmpty()) {
-					printerText = getResources().getString(
-							R.string.printer_found);
-					int i = 0;
-					for (Integer distance : printers.keySet()) {
-						if(i++ > 3) {
-							break;
+
+					Map<Integer, Printer> printers = LocationData
+							.findPrintersAtLocation(location,
+									colorCheck.isChecked(),
+									a3Check.isChecked(), copyCheck.isChecked());
+					if (!printers.isEmpty()) {
+						printerText = getResources().getString(
+								R.string.printer_found);
+						int i = 0;
+						for (Integer distance : printers.keySet()) {
+							if (i++ > 3) {
+								break;
+							}
+							Printer printer = printers.get(distance);
+							Location ploc = LocationData.getLocation(printer
+									.getLocation());
+							printerText = printerText
+									+ "\n"
+									+ printer.getName()
+									+ " "
+									+ getResources().getString(
+											R.string.printer_location)
+									+ " "
+									+ location.getBuilding()
+									+ " "
+									+ location.getBlock()
+									+ location.getFloor()
+									+ " "
+									+ getResources().getString(
+											R.string.printer_distance) + " "
+									+ distance;
 						}
-						Location printer = printers.get(distance);
-						printerText = printerText
-								+ "\n"
-								+ printer.getName()
-								+ " "
-								+ getResources().getString(
-										R.string.printer_location)
-							    + " "
-								+ printer.getBuilding()
-								+ " "
-								+ printer.getBlock()
-								+ printer.getFloor()
-								+ " "
-								+ getResources().getString(
-										R.string.printer_distance) + " " + distance;
 					}
 				}
 			}
