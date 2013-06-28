@@ -73,4 +73,13 @@
 {"id":"00:19:a9:cd:fd:40","location":"GBR_8_WD1"},
 {"id":"00:19:a9:cc:f6:70","location":"GBR_8_WD2"},
 {"id":"00:19:a9:cc:f5:50","location":"GBR_8_WE1"},
-{"id":"00:19:a9:cc:f2:d0","location":"GBR_8_WE2"}]
+{"id":"00:19:a9:cc:f2:d0","location":"GBR_8_WE2"},
+
+{"id":"00:1a:30:bb:ee:70","location":"GBR_8_WB1"},
+{"id":"00:1a:30:bb:ea:90","location":"GBR_8_WB2"},
+{"id":"00:11:5c:1b:98:f0","location":"GBR_7_WB1"},
+{"id":"00:11:21:e0:ba:f0","location":"GBR_7_WB2"},
+{"id":"00:19:a9:cc:f0:90","location":"GBR_5_WB1"},
+{"id":"00:19:a9:cd:f2:80","location":"GBR_4_WB1"},
+{"id":"00:19:a9:cd:2d:40","location":"GBR_4_WB2"}
+]

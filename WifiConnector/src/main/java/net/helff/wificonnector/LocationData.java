@@ -115,6 +115,10 @@ public class LocationData {
         return wifi.get(bssid);
     }
     
+    public static Collection<WifiLocation> getWifiLocations() {
+        return wifi.values();
+    }
+    
     public static Collection<Printer> getPrinters() {
     	return printers;
     }
