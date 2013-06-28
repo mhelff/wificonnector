@@ -317,9 +317,11 @@ public class WifiConnectorActivity extends Activity {
 				if (wifilocation != null) {
 					Location location = LocationData.getLocation(wifilocation
 							.getLocation());
+				    String posTranslated = (String) getResources().getText(getResources().getIdentifier("WIFI_LOC_" + location.getPosition(), "string", "net.helff.wificonnector"));
+
 					posText = location.getBuilding() + " "
 							+ location.getBlock() + location.getFloor() + " "
-							+ location.getPosition() + " " + strongest.BSSID;
+							+ posTranslated + " " + strongest.BSSID;
 
 					Map<Integer, Printer> printers = LocationData
 							.findPrintersAtLocation(location,
@@ -347,7 +349,7 @@ public class WifiConnectorActivity extends Activity {
 									+ " "
 									+ getResources().getString(
 											R.string.printer_distance) + " "
-									+ (distance/100) + "m";
+									+ (distance) + "m";
 						}
 					}
 				}

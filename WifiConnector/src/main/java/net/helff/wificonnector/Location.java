@@ -60,5 +60,9 @@ public class Location implements Comparable<Location> {
     {
         return this.id.compareTo(c.getId());
     }
+    
+    public String toString() {
+    	return id;
+    }
 
 }

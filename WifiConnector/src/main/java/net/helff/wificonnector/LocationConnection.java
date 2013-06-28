@@ -5,9 +5,9 @@ public class LocationConnection {
 
     private String start;
     private String end;
-    private double distance;
+    private int distance;
     
-    public LocationConnection(String start, String end, double distance) {
+    public LocationConnection(String start, String end, int distance) {
         this.start = start;
         this.end = end;
         this.distance = distance;
@@ -21,7 +21,7 @@ public class LocationConnection {
         return end;
     }
 
-    public double getDistance() {
+    public int getDistance() {
         return distance;
     }
 

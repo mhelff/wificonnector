@@ -66,4 +66,20 @@
     <string name="printer_found">Drucker in der Nähe:</string>
     <string name="printer_location">Standort:</string>
     <string name="printer_distance">Entfernung:</string>
+    
+    <string name="WIFI_LOC_WA1">West</string>
+    <string name="WIFI_LOC_WA2">Mitte</string>
+    <string name="WIFI_LOC_WA3">Ost</string>
+    
+    <string name="WIFI_LOC_WB1">West</string>
+    <string name="WIFI_LOC_WB2">Ost</string>
+    
+    <string name="WIFI_LOC_WC1">Nord</string>
+    <string name="WIFI_LOC_WC2">Süd</string>
+    
+    <string name="WIFI_LOC_WD1">Nord</string>
+    <string name="WIFI_LOC_WD2">Süd</string>
+    
+    <string name="WIFI_LOC_WE1">Nord</string>
+    <string name="WIFI_LOC_WE2">Süd</string>
 </resources>

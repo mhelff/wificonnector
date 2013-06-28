@@ -18,14 +18,14 @@ public class LocationDataTest extends TestCase {
 	public void testLocationAmount() throws Exception {
 
 		Collection<Location> l = LocationData.getLocations();
-		assertEquals(243, l.size());
+		assertEquals(256, l.size());
 	}
 	
 	public void testRouting() throws Exception {
 	    LocationConnectionMap rm = new LocationConnectionMap();
 	    DijkstraEngine de = new DijkstraEngine(rm);
-	    de.execute(LocationData.getLocation(6, "A", "West"), LocationData.getLocation(0, "E", "Nord"));
-	    assertEquals(11370, de.getShortestDistance(LocationData.getLocation(0, "E", "Nord")));
+	    de.execute(LocationData.getLocation(6, "A", "WA1"), LocationData.getLocation(0, "E", "WE1"));
+	    assertEquals(216, de.getShortestDistance(LocationData.getLocation(0, "E", "WE1")));
 	}
 
 }

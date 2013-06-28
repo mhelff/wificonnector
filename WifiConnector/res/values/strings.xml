@@ -69,4 +69,19 @@
     
     <string name="crash_toast_text">WifiConnector crash report</string>
     
+    <string name="WIFI_LOC_WA1">West</string>
+    <string name="WIFI_LOC_WA2">Middle</string>
+    <string name="WIFI_LOC_WA3">East</string>
+    
+    <string name="WIFI_LOC_WB1">West</string>
+    <string name="WIFI_LOC_WB2">East</string>
+    
+    <string name="WIFI_LOC_WC1">North</string>
+    <string name="WIFI_LOC_WC2">South</string>
+    
+    <string name="WIFI_LOC_WD1">North</string>
+    <string name="WIFI_LOC_WD2">South</string>
+    
+    <string name="WIFI_LOC_WE1">North</string>
+    <string name="WIFI_LOC_WE2">South</string>
 </resources>

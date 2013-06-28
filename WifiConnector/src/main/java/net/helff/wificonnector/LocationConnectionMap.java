@@ -21,10 +21,10 @@ import com.google.gson.reflect.TypeToken;
 
 public class LocationConnectionMap {
 
-    private final Map<Location, Map<Location, Double>> distances;
+    private final Map<Location, Map<Location, Integer>> distances;
 
     public LocationConnectionMap() {
-        distances = new HashMap<Location, Map<Location, Double>>();
+        distances = new HashMap<Location, Map<Location, Integer>>();
         InputStream is = LocationData.class.getResourceAsStream("/distances.txt");
         Gson g = new Gson();
         Type collectionType = new TypeToken<Collection<LocationConnection>>() {
@@ -38,29 +38,29 @@ public class LocationConnectionMap {
     /**
      * Link two locations by a direct route with the given distance.
      */
-    public void addDirectRoute(Location start, Location end, double distance) {
-        Map<Location, Double> distanceMap = distances.get(start);
+    public void addDirectRoute(Location start, Location end, int distance) {
+        Map<Location, Integer> distanceMap = distances.get(start);
         if (distanceMap == null) {
-            distanceMap = new HashMap<Location, Double>();
+            distanceMap = new HashMap<Location, Integer>();
             distances.put(start, distanceMap);
         }
-        distanceMap.put(end, Double.valueOf(distance));
+        distanceMap.put(end, Integer.valueOf(distance));
         // now vice versa
         distanceMap = distances.get(end);
         if (distanceMap == null) {
-            distanceMap = new HashMap<Location, Double>();
+            distanceMap = new HashMap<Location, Integer>();
             distances.put(end, distanceMap);
         }
-        distanceMap.put(start, Double.valueOf(distance));
+        distanceMap.put(start, Integer.valueOf(distance));
     }
 
     /**
      * @return the distance between the two locations, or 0 if no path exists.
      */
     public int getDistance(Location start, Location end) {
-        Map<Location, Double> distanceMap = distances.get(start);
+        Map<Location, Integer> distanceMap = distances.get(start);
 
-        return (distanceMap != null && distanceMap.containsKey(end)) ? (int)(distanceMap.get(end).doubleValue()*100) : 0;
+        return (distanceMap != null && distanceMap.containsKey(end)) ? distanceMap.get(end).intValue() : 0;
     }
 
     /**
