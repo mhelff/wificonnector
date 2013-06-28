@@ -51,7 +51,7 @@ public class LocationData {
         InputStream is = LocationData.class.getResourceAsStream("/locations.txt");
         Type collectionType = new TypeToken<Collection<Location>>(){}.getType();
         Collection<Location> l = g.fromJson(new InputStreamReader(is), collectionType);
-        addAllLocations(l);
+        addAllLocations(l, "GBR");
         
         is = LocationData.class.getResourceAsStream("/wifi.txt");
         collectionType = new TypeToken<Collection<WifiLocation>>(){}.getType();
@@ -64,9 +64,10 @@ public class LocationData {
                
     }
     
-    private static void addAllLocations(Collection<Location> ls) {
+    private static void addAllLocations(Collection<Location> ls, String building) {
     	locations = new HashMap<String, Location>();
         for(Location l : ls) {
+        	l.setBuilding(building);
             locations.put(l.getId(), l);
         }
     }

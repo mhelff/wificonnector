@@ -37,6 +37,10 @@ public class Location implements Comparable<Location> {
         return building;
     }
     
+    public void setBuilding(String b) {
+        building = b;
+    }
+    
     public boolean equals(Object o)
     {
         return this == o || equals((Location) o);

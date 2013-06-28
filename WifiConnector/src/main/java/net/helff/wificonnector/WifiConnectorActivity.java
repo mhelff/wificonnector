@@ -303,7 +303,7 @@ public class WifiConnectorActivity extends Activity {
 			ScanResult strongest = null;
 			for (ScanResult scanResult : results) {
 				// just check if data is in our location database
-				if (LocationData.getLocation(scanResult.BSSID) != null) {
+				if (LocationData.getWifiLocation(scanResult.BSSID) != null) {
 					if (strongest == null || strongest.level < scanResult.level) {
 						strongest = scanResult;
 					}
@@ -343,14 +343,11 @@ public class WifiConnectorActivity extends Activity {
 									+ getResources().getString(
 											R.string.printer_location)
 									+ " "
-									+ location.getBuilding()
-									+ " "
-									+ location.getBlock()
-									+ location.getFloor()
+									+ ploc.getPosition()
 									+ " "
 									+ getResources().getString(
 											R.string.printer_distance) + " "
-									+ distance;
+									+ (distance/100) + "m";
 						}
 					}
 				}
