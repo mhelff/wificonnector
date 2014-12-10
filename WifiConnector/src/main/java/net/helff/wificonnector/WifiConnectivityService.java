@@ -70,8 +70,10 @@ public class WifiConnectivityService extends IntentService {
     public static final int STATUS_LOCKED = 1;
     public static final int STATUS_WORKING = 2;
     public static final int STATUS_UNLOCKED = 3;
+    public static final int STATUS_NOT_REGISTERED = 3;
     
     public static final String TELEFONICA_SSID = "TelefonicaPublic";
+    private static final String NOT_REGISTERED = "Diese Handynummer ist nicht bekannt.";
 
     private String mainStatus;
     private String detailStatus;
@@ -100,6 +102,7 @@ public class WifiConnectivityService extends IntentService {
         
         // Get the xml/preferences.xml preferences
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        
         mobileNumber = prefs.getString("mobileNumber", "");
         smsDelay = Integer.parseInt(prefs.getString("smsDelay", "15"));
         smsPriority = Integer.parseInt(prefs.getString("smsPriority", "100"));
@@ -260,7 +263,7 @@ public class WifiConnectivityService extends IntentService {
         boolean unlocked = false;
 
         try {
-            HttpGet httpGet = new HttpGet("http://www.helff.net");
+            HttpGet httpGet = new HttpGet("http://www.helff.net"); ///wificonnector/history.json");
             HttpResponse response = httpClient.execute(httpGet, localContext);
             String result = "";
 
@@ -300,23 +303,35 @@ public class WifiConnectivityService extends IntentService {
 
     protected void submitMSISDN(HttpClient httpClient, HttpContext localContext, String msisdn)
             throws ConnectionWorkflowException {
+    	
+    	BufferedReader reader = null;
+    	
         try {
             // post mobile-number to login page
             publishProgress(getString(R.string.wifi_submit_msisdn),
                     getString(R.string.wifi_submit_msisdn_detail, msisdn), STATUS_WORKING, true);
-            HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/login.php?l=de");
+            HttpPost httpPost = new HttpPost("http://172.31.255.254:8001/login.php?l=de");
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair("handynr", msisdn));
             nameValuePairs.add(new BasicNameValuePair("login", "Token per SMS zusenden &gt;"));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             // Execute HTTP Post Request
             HttpResponse response = httpClient.execute(httpPost, localContext);
-            // TODO: check response for success or "not registered"
-            response.getEntity().consumeContent();
+            // check response for success or "not registered"
+            reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+            	if (line.contains(NOT_REGISTERED)) {
+            		publishProgress(getString(R.string.wifi_submit_msisdn), getString(R.string.wifi_submit_msisdn_not_reg),
+                            STATUS_NOT_REGISTERED, true);
+            		throw new ConnectionWorkflowException("error submitting msisdn form");
+                }
+            }
+            
             publishProgress(getString(R.string.wifi_submit_msisdn),
                     getString(R.string.wifi_submitted_msisdn_detail, msisdn), STATUS_WORKING);
         } catch (ClientProtocolException e) {
-            // TODO: this is not "not registered"...
+            // this could also be "not registered"...
             publishProgress(getString(R.string.wifi_submit_msisdn), getString(R.string.wifi_submit_msisdn_not_reg),
                     STATUS_LOCKED, true);
             throw new ConnectionWorkflowException("error submitting msisdn form", e);
@@ -375,7 +390,7 @@ public class WifiConnectivityService extends IntentService {
             // post mobile-number to login page
             publishProgress(getString(R.string.wifi_submit_msisdn),
                     getString(R.string.wifi_submit_token, loginToken.getToken()), STATUS_WORKING, true);
-            HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/token.php?l=de");
+            HttpPost httpPost = new HttpPost("http://172.31.255.254:8001/token.php?l=de");
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair("token", loginToken.getToken()));
             nameValuePairs.add(new BasicNameValuePair("submit", "Lossurfen &gt;"));
@@ -402,7 +417,7 @@ public class WifiConnectivityService extends IntentService {
             publishProgress(getString(R.string.wifi_disconnect), getString(R.string.wifi_disconnect_detail),
                     STATUS_WORKING);
             // post mobile-number to login page
-            HttpPost httpPost = new HttpPost("http://wlan.de.telefonica:8001/index.php?l=de");
+            HttpPost httpPost = new HttpPost("http://172.31.255.254:8001/index.php?l=de");
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair("exit", "Ja, diese Sitzung jetzt beenden &gt;"));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
