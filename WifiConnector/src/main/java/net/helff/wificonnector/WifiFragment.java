@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,9 +46,38 @@ public class WifiFragment extends Fragment {
 			public void onClick(View v) {
 				// printersView.setText(R.string.printer_notfound);
 				// just trigger WiFi-Scanning
+				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+				Editor e = prefs.edit();
+				e.putBoolean("autoConnect", autoConnect.isChecked());
+				e.commit();
 				((WifiConnectorActivity) getActivity()).startScan();
 			}
 
+		});
+		
+		mobileNumber.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+				Editor e = prefs.edit();
+				e.putString("mobileNumber", s.toString());
+				e.commit();
+				((WifiConnectorActivity) getActivity()).startScan();
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				// TODO Auto-generated method stub
+				
+			}
+			
 		});
 		
 		connectButton.setOnClickListener(new OnClickListener() {
