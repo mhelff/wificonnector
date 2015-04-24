@@ -54,7 +54,7 @@
 {"id":"00:19:a9:cd:0a:90","location":"GBR_6_WC2"},
 {"id":"00:19:a9:cc:fa:50","location":"GBR_6_WD1"},
 {"id":"00:19:a9:cc:f7:20","location":"GBR_6_WD2"},
-{"id":"00:19:a9:cc:f5:80","location":"GBR_6_WE1"},
+{"id":"00:19:a9:cc:f5:83","location":"GBR_6_WE1"},
 {"id":"00:19:a9:cc:f1:f0","location":"GBR_6_WE2"},
 {"id":"00:11:5c:1b:a4:f0","location":"GBR_7_WA1"},
 {"id":"00:0f:90:f9:b2:20","location":"GBR_7_WA2"},

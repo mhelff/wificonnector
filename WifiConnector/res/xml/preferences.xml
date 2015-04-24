@@ -7,7 +7,8 @@
             android:defaultValue=""
             android:key="mobileNumber"
             android:summary="@string/settings_msisdn_detail"
-            android:title="@string/settings_msisdn" />
+            android:title="@string/settings_msisdn"
+            android:inputType="phone" />
 
         <CheckBoxPreference
             android:defaultValue="false"

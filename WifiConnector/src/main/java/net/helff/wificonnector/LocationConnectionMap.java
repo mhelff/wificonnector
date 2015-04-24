@@ -21,7 +21,7 @@ import com.google.gson.reflect.TypeToken;
 
 public class LocationConnectionMap {
 
-    private final Map<Location, Map<Location, Integer>> distances;
+    private static Map<Location, Map<Location, Integer>> distances;
 
     public LocationConnectionMap() {
         distances = new HashMap<Location, Map<Location, Integer>>();
@@ -34,6 +34,8 @@ public class LocationConnectionMap {
             addDirectRoute(LocationData.getLocation(c.getStart()), LocationData.getLocation(c.getEnd()), c.getDistance());
         }
     }
+    
+    
 
     /**
      * Link two locations by a direct route with the given distance.

@@ -1,0 +1,7 @@
+[
+{ "type": "0", "version": "1" },
+{ "type": "1", "version": "1" },
+{ "type": "2", "version": "1" },
+{ "type": "3", "version": "1" },
+{ "type": "4", "version": "1" }
+]

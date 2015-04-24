@@ -12,14 +12,18 @@ import net.helff.wificonnector.WifiLocation;
 
 public class LocationDataTest extends TestCase {
 
+	public void setUp() {
+		LocationData.init();
+	}
+	
 	public void testLocationAmount() throws Exception {
-
+		
 		Collection<Location> l = LocationData.getLocations();
 		assertEquals(256, l.size());
 	}
 	
 	public void testRouting() throws Exception {
-	    LocationConnectionMap rm = new LocationConnectionMap();
+	    LocationData rm = new LocationData();
 	    DijkstraEngine de = new DijkstraEngine(rm);
 	    de.execute(LocationData.getLocation(6, "A", "WA1"), LocationData.getLocation(0, "E", "WE1"));
 	    assertEquals(216, de.getShortestDistance(LocationData.getLocation(0, "E", "WE1")));

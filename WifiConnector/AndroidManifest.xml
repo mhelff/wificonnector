@@ -4,7 +4,8 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="7" />
+    <uses-sdk android:minSdkVersion="7"
+              android:targetSdkVersion="14" />
     
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
@@ -14,11 +15,12 @@
     <application
         android:icon="@drawable/launchericon"
         android:label="@string/app_name"
-        android:name="WifiConnector">
+        android:name="WifiConnector" android:allowClearUserData="true">
         
         <activity
             android:name=".WifiConnectorActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat.Light" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

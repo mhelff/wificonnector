@@ -20,61 +20,109 @@
 
 package net.helff.wificonnector;
 
-import java.util.List;
-import java.util.Map;
-
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.wifi.ScanResult;
+import android.content.res.Configuration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.Checkable;
-import android.widget.ImageButton;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.ListView;
 
 /**
  * @author mhelff
  * 
  */
-public class WifiConnectorActivity extends Activity {
-	private StatusReceiver statusReceiver = null;
+public class WifiConnectorActivity extends ActionBarActivity {
 
 	public final static String TAG = "WifiConnectorActivity";
 
-	private ImageView connectButton;
-	private ImageView statusImage;
-	private TextView positionView;
-	private TextView printersView;
-	private CheckBox colorCheck;
-	private CheckBox a3Check;
-	private CheckBox copyCheck;
+	private MenuItem refreshButton;
+	
+	private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private ActionBarDrawerToggle mDrawerToggle;
+
+    private CharSequence mDrawerTitle;
+    private CharSequence mTitle;
+    private String[] mNavigationTitles;
 
 	private int status = WifiConnectivityService.STATUS_NOT_CONNECTED;
+	
+	public static Context ctx;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		ctx = getApplicationContext();
+		
+		LocationData.init();
 
 		if (savedInstanceState != null) {
 			status = savedInstanceState.getInt("connectionStatus",
 					WifiConnectivityService.STATUS_NOT_CONNECTED);
 		}
 
-		setContentView(R.layout.main);
+		setContentView(R.layout.activity_main);
+
+        mTitle = mDrawerTitle = getTitle();
+        mNavigationTitles = getResources().getStringArray(R.array.navigation_array);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // set a custom shadow that overlays the main content when the drawer opens
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        // set up the drawer's list view with items and click listener
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, mNavigationTitles));
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        // enable ActionBar app icon to behave as action to toggle nav drawer
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        // ActionBarDrawerToggle ties together the the proper interactions
+        // between the sliding drawer and the action bar app icon
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+                mDrawerLayout,         /* DrawerLayout object */
+                R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
+                R.string.drawer_open,  /* "open drawer" description for accessibility */
+                R.string.drawer_close  /* "close drawer" description for accessibility */
+                ) {
+        	
+            public void onDrawerClosed(View view) {
+            	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                supportInvalidateOptionsMenu();
+            }
+
+            public void onDrawerOpened(View drawerView) {
+            	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                supportInvalidateOptionsMenu();
+            }
+        };
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        if (savedInstanceState == null) {
+            selectItem(0); 
+        }
+		
+        /*	
 		connectButton = (ImageView) this.findViewById(R.id.connectButton);
 		connectButton.setOnClickListener(new OnClickListener() {
 
@@ -117,69 +165,88 @@ public class WifiConnectorActivity extends Activity {
 
 		});
 
-		statusImage = (ImageView) this.findViewById(R.id.statusImage);
-		positionView = (TextView) this.findViewById(R.id.position);
-		printersView = (TextView) this.findViewById(R.id.smallPrinters);
-		colorCheck = (CheckBox) this.findViewById(R.id.colorSwitch);
-		colorCheck.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-				// printersView.setText(R.string.printer_notfound);
-				// just trigger WiFi-Scanning
-				startScan();
-			}
-
-		});
-		a3Check = (CheckBox) this.findViewById(R.id.sizeSwitch);
-		a3Check.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-				// printersView.setText(R.string.printer_notfound);
-				// just trigger WiFi-Scanning
-				startScan();
-			}
-
-		});
-
-		copyCheck = (CheckBox) this.findViewById(R.id.copySwitch);
-		copyCheck.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-				// printersView.setText(R.string.printer_notfound);
-				// just trigger WiFi-Scanning
-				startScan();
-			}
-
-		});
-
 		updateConnectButton(status);
+		
+		*/
+        refreshButton = (MenuItem) findViewById(R.id.action_refresh);
 	}
+	
+    private void selectItem(int position) {
+        // update the main content by replacing fragments
+    	Fragment fragment;
+    	if(position == 0) {
+    		fragment = new PrinterFragment();
+    	} else {
+    		fragment = new WifiFragment();
+    	}
 
-	public void setStatus(String status, String detail) {
-		Log.i(TAG, status + "; " + detail);
-		TextView largeStatus = (TextView) this.findViewById(R.id.largeStatus);
-		largeStatus.setText(status);
-		TextView detailStatus = (TextView) this.findViewById(R.id.smallStatus);
-		detailStatus.setText(detail);
-	}
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+
+        // update selected item and title, then close the drawer
+        mDrawerList.setItemChecked(position, true);
+        if(position == 0) {
+        	setTitle(R.string.printers);
+        } else {
+        	setTitle(R.string.app_name);
+        }
+        mDrawerLayout.closeDrawer(mDrawerList);
+    }
+
+
 
 	@Override
 	public void onStart() {
 		super.onStart();
+		ctx = getApplicationContext();
+		LocationData.init();
 		// start status receiver
-		startReceiver();
+		//startReceiver();
 
 		// check wifi
-		checkConnection();
+		//checkConnection();
 
 		// start a wifi scan for position update
 		startScan();
 		// immediately show position from old scan, most times thats quite
 		// accurate
-		updatePositionView();
+		//updatePositionView();
 	}
+	
+    /* The click listner for ListView in the navigation drawer */
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position);
+        }
+    }
 
-	private void startScan() {
+    @Override
+    public void setTitle(CharSequence title) {
+        mTitle = title;
+        getSupportActionBar().setTitle(mTitle);
+    }
+
+    /**
+     * When using the ActionBarDrawerToggle, you must call it during
+     * onPostCreate() and onConfigurationChanged()...
+     */
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+    
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggls
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+    
+	protected void startScan() {
 
 		WifiManager wifiManager = (WifiManager) getApplicationContext()
 				.getSystemService(Context.WIFI_SERVICE);
@@ -191,16 +258,14 @@ public class WifiConnectorActivity extends Activity {
 
 	@Override
 	public void onPause() {
-		// stop status scanner
-		stopReceiver();
-
 		super.onPause();
 	}
 
 	@Override
 	public void onResume() {
-		startReceiver();
 		// trigger update
+		ctx = getApplicationContext();
+		LocationData.init();
 		startScan();
 		super.onResume();
 	}
@@ -208,51 +273,40 @@ public class WifiConnectorActivity extends Activity {
 	@Override
 	public void onSaveInstanceState(Bundle bundle) {
 		// stop status scanner
-		stopReceiver();
+		//stopReceiver();
 		bundle.putInt("connectionStatus", status);
 		super.onSaveInstanceState(bundle);
 	}
 
-	private void startReceiver() {
-		if (statusReceiver == null) {
-			statusReceiver = new StatusReceiver();
-			IntentFilter intentFilter = new IntentFilter(
-					StatusIntent.INTENT_STATUS_NOTIFICATION);
-			intentFilter.addAction(LocationIntent.INTENT_LOCATION_NOTIFICATION);
-			registerReceiver(statusReceiver, intentFilter);
-		}
-	}
 
-	private void stopReceiver() {
-		if (statusReceiver != null) {
-			unregisterReceiver(statusReceiver);
-			statusReceiver = null;
-		}
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		menu.add(0, Menu.FIRST, 1, R.string.settings).setShortcut('9', 's')
-				.setIcon(android.R.drawable.ic_menu_preferences);
-
-		menu.add(0, Menu.FIRST + 1, 1, R.string.info).setShortcut('0', 'i')
-				.setIcon(android.R.drawable.ic_menu_info_details);
-
-		return true;
+		MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.activity_main_actions, menu);
+	    return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+		
 		switch (item.getItemId()) {
 
-		case Menu.FIRST:
-			Intent intent = new Intent();
-			intent.setClass(this, WifiConnectorPreferences.class);
-			startActivity(intent);
+		case R.id.action_refresh:
+			startScan();
+			return true;
+			
+		case R.id.action_settings:
+			Intent intentSettings = new Intent();
+			intentSettings.setClass(this, WifiConnectorPreferences.class);
+			startActivity(intentSettings);
 			return true;
 
-		case Menu.FIRST + 1:
+		case R.id.action_about:
 			AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
 			alert.setTitle(R.string.about);
@@ -275,160 +329,14 @@ public class WifiConnectorActivity extends Activity {
 		triggerService(WifiConnectivityService.COMMAND_CHECK_CONNECTION);
 	}
 
-	private void flipConnection() {
-		if (status == WifiConnectivityService.STATUS_LOCKED) {
-			triggerService(WifiConnectivityService.COMMAND_UNLOCK_CONNECTION);
-		} else if (status == WifiConnectivityService.STATUS_UNLOCKED) {
-			triggerService(WifiConnectivityService.COMMAND_LOCK_CONNECTION);
-		}
-	}
-
 	protected void triggerService(int command) {
 		Intent intent = new Intent(this, WifiConnectivityService.class);
 		intent.putExtra(WifiConnectivityService.INTENT_COMMAND, command);
 		startService(intent);
 	}
 
-	public void updatePositionView() {
-		String posText = getResources().getString(R.string.position_default);
-		String printerText = getResources()
-				.getString(R.string.printer_notfound);
-
-		List<ScanResult> results = null;
-		WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-		if (wifiManager != null) {
-			results = wifiManager.getScanResults();
-		}
-		if (results != null) {
-			ScanResult strongest = null;
-			for (ScanResult scanResult : results) {
-				// just check if data is in our location database
-				if (LocationData.getWifiLocation(scanResult.BSSID) != null) {
-					if (strongest == null || strongest.level < scanResult.level) {
-						strongest = scanResult;
-					}
-				}
-			}
-
-			if (strongest != null) {
-				WifiLocation wifilocation = LocationData
-						.getWifiLocation(strongest.BSSID);
-
-				if (wifilocation != null) {
-					Location location = LocationData.getLocation(wifilocation
-							.getLocation());
-				    String posTranslated = (String) getResources().getText(getResources().getIdentifier("WIFI_LOC_" + location.getPosition(), "string", "net.helff.wificonnector"));
-
-					posText = location.getBuilding() + " "
-							+ location.getBlock() + location.getFloor() + " "
-							+ posTranslated + " " + strongest.BSSID;
-
-					Map<Integer, Printer> printers = LocationData
-							.findPrintersAtLocation(location,
-									colorCheck.isChecked(),
-									a3Check.isChecked(), copyCheck.isChecked());
-					if (!printers.isEmpty()) {
-						printerText = getResources().getString(
-								R.string.printer_found);
-						int i = 0;
-						for (Integer distance : printers.keySet()) {
-							if (i++ > 3) {
-								break;
-							}
-							Printer printer = printers.get(distance);
-							Location ploc = LocationData.getLocation(printer
-									.getLocation());
-							printerText = printerText
-									+ "\n"
-									+ printer.getName()
-									+ " "
-									+ getResources().getString(
-											R.string.printer_location)
-									+ " "
-									+ ploc.getPosition()
-									+ " "
-									+ getResources().getString(
-											R.string.printer_distance) + " "
-									+ (distance) + "m";
-						}
-					}
-				}
-			}
-		}
-
-		positionView.setText(posText);
-		printersView.setText(printerText);
-		final ImageButton bPos = (ImageButton) this
-				.findViewById(R.id.buttonPositionRefresh);
-		bPos.setEnabled(true);
-	}
-
-	private void updateConnectButton(int status) {
-		switch (status) {
-
-		case WifiConnectivityService.STATUS_LOCKED:
-			connectButton.setEnabled(true);
-			connectButton.setImageResource(R.drawable.connect);
-			statusImage.setImageResource(R.drawable.wifi_off);
-			connectButton.setVisibility(View.VISIBLE);
-			statusImage.setVisibility(View.VISIBLE);
-			break;
-
-		case WifiConnectivityService.STATUS_UNLOCKED:
-			connectButton.setEnabled(true);
-			connectButton.setImageResource(R.drawable.disconnect);
-			statusImage.setImageResource(R.drawable.wifi_on);
-			connectButton.setVisibility(View.VISIBLE);
-			statusImage.setVisibility(View.VISIBLE);
-			break;
-
-		case WifiConnectivityService.STATUS_WORKING:
-			connectButton.setVisibility(View.GONE);
-			statusImage.setVisibility(View.INVISIBLE);
-			break;
-
-		default:
-			connectButton.setEnabled(false);
-			connectButton.setImageResource(R.drawable.connect);
-			statusImage.setImageResource(R.drawable.wifi_off);
-			break;
-		}
-	}
-
 	private void setStatus(int s) {
 		status = s;
-	}
-
-	private class StatusReceiver extends BroadcastReceiver {
-
-		public StatusReceiver() {
-			// might be used or never :-)
-		}
-
-		public void onReceive(Context context, Intent intent) {
-			if (intent.getAction().equals(
-					StatusIntent.INTENT_STATUS_NOTIFICATION)) {
-				Bundle extras = intent.getExtras();
-				String mainStatus = extras
-						.getString(StatusIntent.EXTRA_MAIN_STATUS);
-				String detailStatus = extras
-						.getString(StatusIntent.EXTRA_DETAIL_STATUS);
-				int status = extras.getInt(StatusIntent.EXTRA_STATUS_CODE);
-
-				TextView mainStatusView = (TextView) findViewById(R.id.largeStatus);
-				mainStatusView.setText(mainStatus);
-				TextView detailStatusView = (TextView) findViewById(R.id.smallStatus);
-				detailStatusView.setText(detailStatus);
-
-				setStatus(status);
-				updateConnectButton(status);
-			}
-
-			if (intent.getAction().equals(
-					LocationIntent.INTENT_LOCATION_NOTIFICATION)) {
-				updatePositionView();
-			}
-		}
 	}
 
 }

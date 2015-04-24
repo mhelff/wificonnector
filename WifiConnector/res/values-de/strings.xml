@@ -5,21 +5,21 @@
     <string name="connect">Verbinden</string>
     <string name="disconnect">Abmelden</string>
     <string name="settings">Einstellungen</string>
-    <string name="telefonicaPublic">TelefonicaPublic</string>
+    <string name="telefonicaPublic">TelefonicaGuest</string>
     <string name="info">Info</string>
     <string name="position_headline">Deine Position:</string>
     <string name="position_default">Unbekannt</string>
-    <string name="intro">Diese App schaltet Deinen Gast-Zugang im TelefonicaPublic-WiFi frei.</string>
+    <string name="intro">Diese App schaltet Deinen Gast-Zugang im TelefonicaGuest-WiFi frei.</string>
 
     <string name="error_check_network">Error checking network status</string>
     
     <string name="phone_not_set">Telefon-Nummer nicht eingegeben</string>
     <string name="check_settings">Bitte überprüfen Sie die Einstellungen</string>
     <string name="not_connected">Nicht verbunden</string>
-    <string name="not_connected_detail">Nicht verbunden mit TelefonicaPublic</string>
+    <string name="not_connected_detail">Nicht verbunden mit TelefonicaGuest</string>
     
-    <string name="wifi_ready">TelefonicaPublic bereit</string>
-    <string name="wifi_locked">TelefonicaPublic gesperrt</string>
+    <string name="wifi_ready">TelefonicaGuest bereit</string>
+    <string name="wifi_locked">TelefonicaGuest gesperrt</string>
     <string name="wifi_ready_detail">Internet-Zugang ist entsperrt</string>
     <string name="wifi_locked_detail">Drücke auf "Verbinden"</string>
     
@@ -43,7 +43,7 @@
     <string name="settings_msisdn">Telefonnummer</string>
     <string name="settings_msisdn_detail">Deine Mobil-Telefonnummer im Format +491791234567</string>
     <string name="settings_autoconnect">Automatische Verbindung</string>
-    <string name="settings_autoconnect_detail">Stelle Verbindung zu TelefonicaPublic automatisch her</string>
+    <string name="settings_autoconnect_detail">Stelle Verbindung zu TelefonicaGuest automatisch her</string>
     <string name="settings_autoclearnotification">Lösche Benachrichtigungen</string>
     <string name="settings_autoclearnotification_detail">Entferne Erfolgs-Benachrichtigungen automatisch</string>
     <string name="settings_smsdelay">Wartezeit für Zugangscode</string>
@@ -59,6 +59,7 @@
     <string name="signup_button">Jetzt registrieren!</string>
     <string name="send">Senden</string>
     
+    <string name="printers">Drucker</string>
     <string name="printer_notfound">Keine Drucker gefunden</string>
     <string name="printer_color">Farbe</string>
     <string name="printer_size">A3</string>
@@ -82,4 +83,10 @@
     
     <string name="WIFI_LOC_WE1">Nord</string>
     <string name="WIFI_LOC_WE2">Süd</string>
+    
+    <string-array name="navigation_array">
+        <item>Drucker</item>
+        <item>Wifi-Anmeldung</item>
+    </string-array>
+    
 </resources>

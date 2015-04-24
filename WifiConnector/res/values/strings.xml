@@ -4,22 +4,24 @@
     <string name="app_name">WifiConnector</string>
     <string name="connect">Connect</string>
     <string name="disconnect">Disconnect</string>
+    <string name="connecting">Connecting...</string>
     <string name="settings">Settings</string>
-    <string name="telefonicaPublic">TelefonicaPublic</string>
+    <string name="telefonicaPublic">TelefonicaGuest</string>
     <string name="info">Info</string>
     <string name="position_headline">Your position:</string>
     <string name="position_default">Unknown</string>
-    <string name="intro">This app will unlock your guest access to TelefonicaPublic.</string>
-
+    <string name="intro">This app will unlock your guest access to TelefonicaGuest.</string>
+	<string name="action_refresh">Refresh</string>
+    
     <string name="error_check_network">Error checking network status</string>
     
     <string name="phone_not_set">Mobile phone number not set</string>
     <string name="check_settings">Check app settings</string>
     <string name="not_connected">Not connected</string>
-    <string name="not_connected_detail">Not connected to TelefonicaPublic</string>
+    <string name="not_connected_detail">Not connected to TelefonicaGuest</string>
     
-    <string name="wifi_ready">TelefonicaPublic ready</string>
-    <string name="wifi_locked">TelefonicaPublic locked</string>
+    <string name="wifi_ready">TelefonicaGuest ready</string>
+    <string name="wifi_locked">TelefonicaGuest locked</string>
     <string name="wifi_ready_detail">Internet access is unlocked</string>
     <string name="wifi_locked_detail">Press connect to unlock</string>
     
@@ -43,7 +45,7 @@
     <string name="settings_msisdn">Mobile Number</string>
     <string name="settings_msisdn_detail">Your mobile number in the format +491791234567</string>
     <string name="settings_autoconnect">Automatic connection</string>
-    <string name="settings_autoconnect_detail">Connect to TelefonicaPublic automatically</string>
+    <string name="settings_autoconnect_detail">Connect to TelefonicaGuest automatically</string>
     <string name="settings_autoclearnotification">Don\'t keep notifications</string>
     <string name="settings_autoclearnotification_detail">Remove success notifications automatically</string>
     <string name="settings_smsdelay">Wait for login token</string>
@@ -59,6 +61,7 @@
     <string name="signup_button">Sign-Up now!</string>
     <string name="send">Send</string>
     
+    <string name="printers">Printers</string>
     <string name="printer_notfound">No printers found</string>
     <string name="printer_color">Color</string>
     <string name="printer_size">Size A3</string>
@@ -68,6 +71,8 @@
     <string name="printer_distance">Distance:</string>
     
     <string name="crash_toast_text">WifiConnector crash report</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
     
     <string name="WIFI_LOC_WA1">West</string>
     <string name="WIFI_LOC_WA2">Middle</string>
@@ -84,4 +89,9 @@
     
     <string name="WIFI_LOC_WE1">North</string>
     <string name="WIFI_LOC_WE2">South</string>
+    
+    <string-array name="navigation_array">
+        <item>Printers</item>
+        <item>Wifi-Login</item>
+    </string-array>
 </resources>

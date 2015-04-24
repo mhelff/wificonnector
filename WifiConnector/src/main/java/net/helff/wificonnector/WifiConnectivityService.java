@@ -72,7 +72,7 @@ public class WifiConnectivityService extends IntentService {
     public static final int STATUS_UNLOCKED = 3;
     public static final int STATUS_NOT_REGISTERED = 3;
     
-    public static final String TELEFONICA_SSID = "TelefonicaPublic";
+    public static final String TELEFONICA_SSID = "TelefonicaGuest";
     private static final String NOT_REGISTERED = "Diese Handynummer ist nicht bekannt.";
 
     private String mainStatus;
@@ -310,7 +310,7 @@ public class WifiConnectivityService extends IntentService {
             // post mobile-number to login page
             publishProgress(getString(R.string.wifi_submit_msisdn),
                     getString(R.string.wifi_submit_msisdn_detail, msisdn), STATUS_WORKING, true);
-            HttpPost httpPost = new HttpPost("http://172.31.255.254:8001/login.php?l=de");
+            HttpPost httpPost = new HttpPost("http://172.31.233.254:8001/login.php?l=de");
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair("handynr", msisdn));
             nameValuePairs.add(new BasicNameValuePair("login", "Token per SMS zusenden &gt;"));
@@ -390,7 +390,7 @@ public class WifiConnectivityService extends IntentService {
             // post mobile-number to login page
             publishProgress(getString(R.string.wifi_submit_msisdn),
                     getString(R.string.wifi_submit_token, loginToken.getToken()), STATUS_WORKING, true);
-            HttpPost httpPost = new HttpPost("http://172.31.255.254:8001/token.php?l=de");
+            HttpPost httpPost = new HttpPost("http://172.31.233.254:8001/token.php?l=de");
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair("token", loginToken.getToken()));
             nameValuePairs.add(new BasicNameValuePair("submit", "Lossurfen &gt;"));
@@ -417,7 +417,7 @@ public class WifiConnectivityService extends IntentService {
             publishProgress(getString(R.string.wifi_disconnect), getString(R.string.wifi_disconnect_detail),
                     STATUS_WORKING);
             // post mobile-number to login page
-            HttpPost httpPost = new HttpPost("http://172.31.255.254:8001/index.php?l=de");
+            HttpPost httpPost = new HttpPost("http://172.31.233.254:8001/index.php?l=de");
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair("exit", "Ja, diese Sitzung jetzt beenden &gt;"));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));

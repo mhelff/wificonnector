@@ -31,6 +31,8 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import android.content.Context;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -44,24 +46,22 @@ public class LocationData {
     private static Map<String, Location> locations;
     private static Map<String, WifiLocation> wifi;
     private static Collection<Printer> printers;
-
-    static {
-    	Gson g = new Gson();
+    private static Map<Location, Map<Location, Integer>> distances;
+    
+    public static void init() {
+    	Collection<Location> l = ResourceHelper.getLocations();
+    	addAllLocations(l, "GBR");
     	
-        InputStream is = LocationData.class.getResourceAsStream("/locations.txt");
-        Type collectionType = new TypeToken<Collection<Location>>(){}.getType();
-        Collection<Location> l = g.fromJson(new InputStreamReader(is), collectionType);
-        addAllLocations(l, "GBR");
-        
-        is = LocationData.class.getResourceAsStream("/wifi.txt");
-        collectionType = new TypeToken<Collection<WifiLocation>>(){}.getType();
-        Collection<WifiLocation> wl = g.fromJson(new InputStreamReader(is), collectionType);
-        addAllWifiLocations(wl);
-        
-        is = LocationData.class.getResourceAsStream("/printers.txt");
-        collectionType = new TypeToken<Collection<Printer>>(){}.getType();
-        printers = g.fromJson(new InputStreamReader(is), collectionType);
-               
+    	Collection<WifiLocation> wl = ResourceHelper.getWifiLocations();
+    	addAllWifiLocations(wl);
+    	
+    	printers = ResourceHelper.getPrinters();
+    	
+    	distances = new HashMap<Location, Map<Location, Integer>>();
+    	Collection<LocationConnection> lc = ResourceHelper.getRoutes();
+        for (LocationConnection c : lc) {
+            addDirectRoute(LocationData.getLocation(c.getStart()), LocationData.getLocation(c.getEnd()), c.getDistance());
+        }
     }
     
     private static void addAllLocations(Collection<Location> ls, String building) {
@@ -82,7 +82,7 @@ public class LocationData {
     public static SortedMap<Integer, Printer> findPrintersAtLocation(Location pos, boolean color, boolean a3, boolean copier) {
     	SortedMap<Integer, Printer> result = new TreeMap<Integer, Printer>();
     	
-    	LocationConnectionMap rm = new LocationConnectionMap();
+    	LocationData rm = new LocationData();
 	    DijkstraEngine de = new DijkstraEngine(rm);
     	
     	Collection<String> neededCapabilities = new HashSet<String>();
@@ -105,6 +105,41 @@ public class LocationData {
     	}
     	
     	return result;
+    }
+    
+    /**
+     * @return the distance between the two locations, or 0 if no path exists.
+     */
+    public int getDistance(Location start, Location end) {
+        Map<Location, Integer> distanceMap = distances.get(start);
+
+        return (distanceMap != null && distanceMap.containsKey(end)) ? distanceMap.get(end).intValue() : 0;
+    }
+    
+    /**
+     * Link two locations by a direct route with the given distance.
+     */
+    private static void addDirectRoute(Location start, Location end, int distance) {
+        Map<Location, Integer> distanceMap = distances.get(start);
+        if (distanceMap == null) {
+            distanceMap = new HashMap<Location, Integer>();
+            distances.put(start, distanceMap);
+        }
+        distanceMap.put(end, Integer.valueOf(distance));
+        // now vice versa
+        distanceMap = distances.get(end);
+        if (distanceMap == null) {
+            distanceMap = new HashMap<Location, Integer>();
+            distances.put(end, distanceMap);
+        }
+        distanceMap.put(start, Integer.valueOf(distance));
+    }
+
+    /**
+     * @return the list of all valid destinations from the given Location.
+     */
+    public Set<Location> getDestinations(Location location) {
+        return distances.get(location) != null ? distances.get(location).keySet() : new HashSet<Location>();
     }
     
     public static Location getLocation(String id) {

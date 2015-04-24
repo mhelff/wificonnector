@@ -21,10 +21,13 @@
 package net.helff.wificonnector;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.util.Log;
 
 public class SMSReceiver extends BroadcastReceiver {
 
@@ -37,7 +40,7 @@ public class SMSReceiver extends BroadcastReceiver {
 		token = t;
 	}
 
-	public void onReceive(Context context, Intent intent) {
+	public void onReceive(final Context context, Intent intent) {
 		if (intent.getAction().equals(ACTION)) {
 			Bundle bundle = intent.getExtras();
 
@@ -47,10 +50,10 @@ public class SMSReceiver extends BroadcastReceiver {
 						.createFromPdu((byte[]) messages[n]);
 				// TODO: check from address
 				// now parse message and try to set token
-				String msg = smsMessage.getMessageBody();
+				final String msg = smsMessage.getMessageBody();
 				if (token.extractTokenFromSms(msg) != null) {
 					this.abortBroadcast();
-				}
+				} 
 			}
 		}
 	}

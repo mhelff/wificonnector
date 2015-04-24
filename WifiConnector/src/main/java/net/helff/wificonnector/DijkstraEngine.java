@@ -71,7 +71,7 @@ public class DijkstraEngine
     /**
      * The graph.
      */
-    private final LocationConnectionMap map;
+    private final LocationData map;
     
     /**
      * The working set of locations, kept ordered by shortest distance.
@@ -98,7 +98,7 @@ public class DijkstraEngine
     /**
      * Constructor.
      */
-    public DijkstraEngine(LocationConnectionMap map)
+    public DijkstraEngine(LocationData map)
     {
         this.map = map;
     }

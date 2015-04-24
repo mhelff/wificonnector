@@ -28,6 +28,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 public class WifiConnectivityReceiver extends BroadcastReceiver {
@@ -72,6 +73,7 @@ public class WifiConnectivityReceiver extends BroadcastReceiver {
 						command);
 				context.startService(msgIntent);
 			}
+			
 
 		}
 		if (intent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
