@@ -263,7 +263,7 @@ public class WifiConnectivityService extends IntentService {
         boolean unlocked = false;
 
         try {
-            HttpGet httpGet = new HttpGet("http://www.helff.net"); ///wificonnector/history.json");
+            HttpGet httpGet = new HttpGet("http://wificonnector.helff.net"); ///wificonnector/history.json");
             HttpResponse response = httpClient.execute(httpGet, localContext);
             String result = "";
 
